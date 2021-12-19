@@ -35,6 +35,7 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
 }
 
 void AirConStateService::begin() {
+  _state.onoff = DEFAULT_ONOFF;
   _state.mode = DEFAULT_MODE;
   _state.temperature = DEFAULT_TEMPERATURE;
   _state.flowspeed = DEFAULT_FLOWSPEED;
