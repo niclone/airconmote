@@ -1,5 +1,7 @@
 #include <AirConStateService.h>
 
+#include "AirConDaikin.h"
+
 AirConStateService::AirConStateService(AsyncWebServer* server,
                                      SecurityManager* securityManager,
                                      AsyncMqttClient* mqttClient,
@@ -35,6 +37,7 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
 }
 
 void AirConStateService::begin() {
+  aircondevice = (AirConDevice *)new AirConDaikin();
   _state.onoff = DEFAULT_ONOFF;
   _state.mode = DEFAULT_MODE;
   _state.temperature = DEFAULT_TEMPERATURE;
@@ -42,8 +45,13 @@ void AirConStateService::begin() {
   onConfigUpdated();
 }
 
+void AirConStateService::loop() {
+    aircondevice->loop();
+}
+
 void AirConStateService::onConfigUpdated() {
   //digitalWrite(LED_PIN, _state.ledOn ? LED_ON : LED_OFF);
+  aircondevice->setState(&_state);
 }
 
 void AirConStateService::registerConfig() {

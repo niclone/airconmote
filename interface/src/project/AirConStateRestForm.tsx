@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 
-import { Button, Checkbox, Slider, Box, TextField } from '@mui/material';
+import { Button, Switch, Slider, Box, TextField } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 
 import AcUnitIcon from '@mui/icons-material/AcUnit';
@@ -65,9 +65,24 @@ const AirConStateRestForm: FC = () => {
         />
         <BlockFormControlLabel
           control={
+            <Switch
+              name="onoff"
+              disabled={saving}
+              checked={data.onoff}
+              onChange={(ev) => {
+                AirConApi.updateAirConState({...data, onoff: ev.target.checked});
+                setData({...data, onoff: ev.target.checked});
+              }}
+              color="primary"
+            />
+          }
+          label="Power"
+        />
+        <BlockFormControlLabel
+          control={
             <ToggleButtonGroup
             exclusive
-            aria-label="text alignment"
+            aria-label="AirCon Mode"
             sx={{ margin: 10 }}
             onChange={(ev, v) => { AirConApi.updateAirConState({...data, mode: ""+v}); setData({...data, mode: ""+v}); }}
             >

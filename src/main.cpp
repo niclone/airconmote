@@ -4,6 +4,8 @@
 #include <AirConMqttSettingsService.h>
 #include <AirConStateService.h>
 
+#include <AirConDaikin.h>
+
 #define SERIAL_BAUD_RATE 115200
 
 AsyncWebServer server(80);
@@ -16,16 +18,21 @@ LightStateService lightStateService = LightStateService(&server,
                                                         esp8266React.getMqttClient(),
                                                         &lightMqttSettingsService);
 
+
+
+
 AirConMqttSettingsService airConMqttSettingsService =
     AirConMqttSettingsService(&server, esp8266React.getFS(), esp8266React.getSecurityManager());
+
 AirConStateService airConStateService = AirConStateService(&server,
                                                         esp8266React.getSecurityManager(),
                                                         esp8266React.getMqttClient(),
                                                         &airConMqttSettingsService);
 
-
+/*
 void uarttunnel_setup();
 void uarttunnel_loop();
+*/
 
 void setup() {
   // start serial and filesystem
@@ -49,12 +56,12 @@ void setup() {
   // start the server
   server.begin();
 
-  uarttunnel_setup();
+  //uarttunnel_setup();
 }
 
 void loop() {
   // run the framework's loop function
   esp8266React.loop();
 
-  uarttunnel_loop();
+  //uarttunnel_loop();
 }
