@@ -11,7 +11,7 @@ import AirConMqttSettingsForm from './AirConMqttSettingsForm';
 import AirConStateWebSocketForm from './AirConStateWebSocketForm';
 
 const AirConProject: FC = () => {
-  useLayoutTitle("AirCon Project");
+  useLayoutTitle("AirCon");
   const { routerTab } = useRouterTab();
 
   return (
