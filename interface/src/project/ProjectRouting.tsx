@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Navigate, Routes, Route } from 'react-router-dom';
 
-import DemoProject from './DemoProject';
 import AirCon from './AirCon';
 
 const ProjectRouting: FC = () => {
@@ -10,11 +9,10 @@ const ProjectRouting: FC = () => {
       {
         // Add the default route for your project below
       }
-      <Route path="/*" element={<Navigate to="demo/information" />} />
+      <Route path="/*" element={<Navigate to="aircon/rest" />} />
       {
         // Add your project page routes below.
       }
-      <Route path="demo/*" element={<DemoProject />} />
       <Route path="airCon/*" element={<AirCon />} />
     </Routes>
   );
