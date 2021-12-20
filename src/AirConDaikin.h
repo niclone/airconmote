@@ -21,6 +21,15 @@ class REGISTER {
     static const byte TEMP_SENSORS        = 0x09;
 };
 
+class MODE {
+  public:
+    static const byte AUTO                = 0x01;
+    static const byte DRY                 = 0x02;
+    static const byte SNOW                = 0x03;
+    static const byte HEAT                = 0x04;
+    static const byte AIR                 = 0x06;
+};
+
 class AirConDaikin : AirConDevice {
   public:
     AirConDaikin();
@@ -32,9 +41,11 @@ class AirConDaikin : AirConDevice {
 
   private:
     HardwareSerial *serial;
+    AirConState realState;
     int latestAskedState;
     byte outBuffer[16], inBuffer[16];
     int inBufferIndex;
+    uint32_t latestmsg;
 
     void loopAskState();
     void initSerial();
@@ -42,6 +53,7 @@ class AirConDaikin : AirConDevice {
     void decodeInputMessage();
     void decodeRegisterAnswer(byte *msg, int len);
     void decodeRegister2Answer(byte *msg, int len);
+    void decodeRegisterAnswerMode(byte *inMessage, int len);
     void sendMessage(byte packet[], int length);
     void sendMode(bool onoff, String mode, float temp, int flowspeed);
 };

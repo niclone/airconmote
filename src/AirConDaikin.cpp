@@ -4,6 +4,7 @@ AirConDaikin::AirConDaikin() {
     initSerial();
     latestAskedState=0;
     inBufferIndex=0;
+    latestmsg=0;
 }
 
 AirConDaikin::~AirConDaikin() {
@@ -20,17 +21,19 @@ AirConState *AirConDaikin::getState() {
 
 void AirConDaikin::initSerial() {
     serial = &Serial1;
-    serial->begin(2400, SERIAL_8N2, 16, 17, false, 200000UL);
+    serial->begin(2400, SERIAL_8N2, 16, 17);
 }
 
 void AirConDaikin::loop() {
-
+    loopAskState();
 }
 
 void AirConDaikin::loopAskState() {
-    if (++latestAskedState > 0x24) latestAskedState=0x01;
-    byte msg[]={MSGCODE::READ_REGISTER, (byte)latestAskedState};
-    sendMessage(msg, sizeof(msg));
+    if (millis() - latestmsg > 5000) {
+        if (++latestAskedState > 0x24) latestAskedState=0x01;
+        byte msg[]={MSGCODE::READ_REGISTER, (byte)latestAskedState};
+        sendMessage(msg, sizeof(msg));
+    }
 }
 
 void AirConDaikin::readSerial() {
@@ -86,6 +89,7 @@ void AirConDaikin::decodeInputMessage() {
 void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
     switch(inMessage[0]) {
         case REGISTER::MODE:
+            decodeRegisterAnswerMode(&inMessage[1], len-1);
             break;
         case REGISTER::FLOWAIR_DIRECTION:
             break;
@@ -98,6 +102,19 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
 
 void AirConDaikin::decodeRegister2Answer(byte *inMessage, int len) {
 
+}
+
+void AirConDaikin::decodeRegisterAnswerMode(byte *inMessage, int len) {
+    realState.onoff = inMessage[0] == 0x01 ? true : false;
+    switch(inMessage[1]) {
+        case MODE::AUTO: realState.mode = "auto"; break;
+        case MODE::DRY:  realState.mode = "dry";  break;
+        case MODE::SNOW: realState.mode = "snow"; break;
+        case MODE::HEAT: realState.mode = "heat"; break;
+        case MODE::AIR:  realState.mode = "air";  break;
+    }
+    realState.temperature = inMessage[2] / 2.0 + 10.0;
+    realState.flowspeed = inMessage[3];
 }
 
 void AirConDaikin::sendMessage(byte message[], int length) {
@@ -113,6 +130,7 @@ void AirConDaikin::sendMessage(byte message[], int length) {
     outBuffer[3+length]=0x03;
 
     serial->write(outBuffer, 4+length);
+    latestmsg=millis();
 }
 
 void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) {
@@ -125,15 +143,15 @@ void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) 
 
     // encode mode :
     if (mode.equals("auto")) {
-        message[3]=0x01; // auto
+        message[3]=MODE::AUTO; // auto
     } else if (mode.equals("dry")) {
-        message[3]=0x02; // dry
+        message[3]=MODE::DRY; // dry
     } else if (mode.equals("snow")) {
-        message[3]=0x03; // snow
+        message[3]=MODE::SNOW; // snow
     } else if (mode.equals("heat")) {
-        message[3]=0x04; // heat
+        message[3]=MODE::HEAT; // heat
     } else if (mode.equals("air")) {
-        message[3]=0x05; // air
+        message[3]=MODE::AIR; // air
     } else {
         //console.error("setMode to unknown mode : ", mode);
         return;

@@ -1,12 +1,17 @@
 import { FC, useState } from 'react';
 
-import { Button, Switch, Slider, Box, TextField } from '@mui/material';
+import { Button, Switch, Slider, Box, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 
+import ThermostatAutoIcon from '@mui/icons-material/ThermostatAuto';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FormatColorResetIcon from '@mui/icons-material/FormatColorReset';
 import AirIcon from '@mui/icons-material/Air';
+
+import HdrAutoOutlinedIcon from '@mui/icons-material/HdrAutoOutlined';
+import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
+import TuneIcon from '@mui/icons-material/Tune';
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -16,13 +21,26 @@ import { updateValue, useRest } from '../utils';
 
 import * as AirConApi from './api';
 import { AirConState } from './types';
+import { NfcTwoTone } from '@mui/icons-material';
 
 const AirConStateRestForm: FC = () => {
   const {
     loadData, saveData, saving, setData, data, errorMessage
   } = useRest<AirConState>({ read: AirConApi.readAirConState, update: AirConApi.updateAirConState });
 
+  const myUpdateData = (newconf: object) => {
+    let newdata = { ...data!, ...newconf};
+    AirConApi.updateAirConState(newdata).then(answer => {
+        setData(answer.data);
+    })
+  };
+
   const updateFormValue = updateValue(setData);
+  const sxBlockForm={
+    ".MuiFormControlLabel-label": {
+        width: 125,
+    },
+  };
   const temperatureMarks = [
     {
       value: 10,
@@ -54,38 +72,35 @@ const AirConStateRestForm: FC = () => {
     if (!data) {
       return (<FormLoader onRetry={loadData} errorMessage={errorMessage} />);
     }
-    console.log("data : ", data);
+    console.log("data for content : ", data);
 
     return (
       <>
-        <MessageBox
-          level="info"
-          message="The form below controls the LED via the RESTful service exposed by the ESP device."
-          my={2}
-        />
         <BlockFormControlLabel
           control={
             <Switch
               name="onoff"
               disabled={saving}
               checked={data.onoff}
-              onChange={(ev) => {
-                AirConApi.updateAirConState({...data, onoff: ev.target.checked});
-                setData({...data, onoff: ev.target.checked});
-              }}
+              onChange={(ev) => myUpdateData({...data, onoff: ev.target.checked})}
               color="primary"
             />
           }
           label="Power"
+          labelPlacement='start'
+          sx={sxBlockForm}
         />
-        <BlockFormControlLabel
+      <BlockFormControlLabel
           control={
             <ToggleButtonGroup
             exclusive
             aria-label="AirCon Mode"
-            sx={{ margin: 10 }}
-            onChange={(ev, v) => { AirConApi.updateAirConState({...data, mode: ""+v}); setData({...data, mode: ""+v}); }}
+            sx={{ margin: 1 }}
+            onChange={(ev, v) => myUpdateData({...data, mode: ""+v}) }
             >
+            <ToggleButton value="auto" aria-label="Automatic" selected={data.mode === "auto"}>
+              <ThermostatAutoIcon />
+            </ToggleButton>
             <ToggleButton value="snow" aria-label="Air Conditionned" selected={data.mode === "snow"}>
               <AcUnitIcon />
             </ToggleButton>
@@ -101,10 +116,12 @@ const AirConStateRestForm: FC = () => {
             </ToggleButtonGroup>
           }
           label="Mode"
+          labelPlacement='start'
+          sx={sxBlockForm}
         />
         <BlockFormControlLabel
           control={
-            <Box sx={{ width: 300, margin: 10 }}>
+            <Box sx={{ width: 300, margin: 1 }}>
                 <Slider
                     name="temperature"
                     disabled={saving}
@@ -117,28 +134,54 @@ const AirConStateRestForm: FC = () => {
                     min={10}
                     max={30}
                     //onChange={(ev, v) => AirConApi.updateAirConState({temperature: parseFloat(""+v), mode:"", flowspeed: 0})}
-                    onChangeCommitted={(ev, v) => AirConApi.updateAirConState({...data, temperature: parseFloat(""+v)})}
+                    onChangeCommitted={(ev, v) => myUpdateData({...data, temperature: parseFloat(""+v)})}
                 />
             </Box>
           }
           label="Temperature"
+          labelPlacement='start'
+          sx={sxBlockForm}
         />
         <BlockFormControlLabel
           control={
-            <Box sx={{ width: 300, margin: 10 }}>
+            <ToggleButtonGroup
+            exclusive
+            aria-label="Flowspeed Mode"
+            sx={{ margin: 1 }}
+            onChange={(ev, v) => myUpdateData({...data, flowspeed: parseInt(""+v)}) }
+            >
+            <ToggleButton value={0x11} aria-label="Automatic" selected={data.flowspeed === 0x11}>
+              <HdrAutoOutlinedIcon />
+            </ToggleButton>
+            <ToggleButton value={0x12} aria-label="Silent" selected={data.flowspeed === 0x12}>
+              <HearingDisabledIcon />
+            </ToggleButton>
+            <ToggleButton value={0x05} aria-label="Manual" selected={data.flowspeed < 0x11}>
+              <TuneIcon />
+            </ToggleButton>
+            </ToggleButtonGroup>
+          }
+          label="Flow Mode"
+          labelPlacement='start'
+          sx={sxBlockForm}
+        />
+        <BlockFormControlLabel
+          control={
+            <Box sx={{ width: 300, margin: 1 }}>
                 <Slider
                     aria-label="Flow Speed"
-                    defaultValue={data.flowspeed}
-                    valueLabelDisplay="on"
+                    defaultValue={data.flowspeed-2}
                     getAriaValueText={valuetext}
                     step={1}
                     min={1}
                     max={5}
-                    onChangeCommitted={(ev, v) => AirConApi.updateAirConState({...data, flowspeed: parseFloat(""+v)})}
+                    onChangeCommitted={(ev, v) => myUpdateData({...data, flowspeed: parseInt(""+v)+2})}
                 />
             </Box>
           }
           label="Flow Speed"
+          labelPlacement='start'
+          sx={sxBlockForm}
         />
       </>
     );

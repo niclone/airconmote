@@ -63,5 +63,7 @@ void loop() {
   // run the framework's loop function
   esp8266React.loop();
 
+  airConStateService.loop();
+
   //uarttunnel_loop();
 }

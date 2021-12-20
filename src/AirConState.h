@@ -55,7 +55,7 @@ class AirConState {
       changed=true;
     }
     if (airConState.flowspeed != newFlowspeed) {
-      if (newFlowspeed < 1 || newFlowspeed > 5)
+      if (!((newFlowspeed >= 3 && newFlowspeed <= 7) || (newFlowspeed >= 0x11 && newFlowspeed <= 0x12)))
         return StateUpdateResult::ERROR;
       airConState.flowspeed = newFlowspeed;
       changed=true;
