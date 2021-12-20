@@ -1,25 +1,18 @@
-# ESP8266 React
+# AirConMote
 
-[![Build Status](https://travis-ci.org/rjwats/esp8266-react.svg?branch=master)](https://travis-ci.org/rjwats/esp8266-react)
-
-A simple, secure and extensible framework for IoT projects built on ESP8266/ESP32 platforms with responsive [React](https://reactjs.org/) front-end built with [Material-UI](https://material-ui.com/).
-
-Designed to work with the PlatformIO IDE with [limited setup](#getting-started). Please read below for setup, build and upload instructions.
-
-![Screenshots](/media/screenshots.png?raw=true "Screenshots")
+This is a firmware writed for ESP32/ESP8266 module.
+It give WiFi and MQTT support on some Daikin Air Conditionner that have the S31 module connector.
+This project is based on esp8266-react framework
 
 ## Features
 
-Provides many of the features required for IoT projects:
+Provides many of the features required for IoT :
 
+* Web interface that allow full control of the Air Conditionner
 * Configurable WiFi - Network scanner and WiFi configuration screen
-* Configurable Access Point - Can be continuous or automatically enabled when WiFi connection fails
-* Network Time - Synchronization with NTP
 * MQTT - Connection to an MQTT broker for automation and monitoring
 * Remote Firmware Updates - Firmware replacement using OTA update or upload via UI
 * Security - Protected RESTful endpoints and a secured user interface
-
-Features may be [enabled or disabled](#selecting-features) as required at compile time.
 
 ## Getting Started
 
