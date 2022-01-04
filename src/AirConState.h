@@ -8,6 +8,7 @@
 #define DEFAULT_MODE "auto"
 #define DEFAULT_TEMPERATURE 24.0f
 #define DEFAULT_FLOWSPEED 3
+#define DEFAULT_VERTICALSWING false
 
 class AirConState {
  public:
@@ -15,12 +16,14 @@ class AirConState {
   String mode;
   float temperature;
   int flowspeed;
+  bool verticalswing;
 
   static void read(AirConState& settings, JsonObject& root) {
     root["onoff"] = settings.onoff;
     root["mode"] = settings.mode;
     root["temperature"] = settings.temperature;
     root["flowspeed"] = settings.flowspeed;
+    root["verticalswing"] = settings.verticalswing;
   }
 
   static StateUpdateResult update(JsonObject& root, AirConState& airConState) {
@@ -36,6 +39,7 @@ class AirConState {
     String newMode = root["mode"] | DEFAULT_MODE;
     float newTemperature = root["temperature"] | DEFAULT_TEMPERATURE;
     float newFlowspeed = root["flowspeed"] | DEFAULT_FLOWSPEED;
+    bool newVerticalswing = root["verticalswing"] | DEFAULT_ONOFF;
     bool changed = false;
 
     if (airConState.onoff != newOnOff) {
@@ -58,6 +62,10 @@ class AirConState {
       if (!((newFlowspeed >= 3 && newFlowspeed <= 7) || (newFlowspeed >= 0x11 && newFlowspeed <= 0x12)))
         return StateUpdateResult::ERROR;
       airConState.flowspeed = newFlowspeed;
+      changed=true;
+    }
+    if (airConState.verticalswing != newVerticalswing) {
+      airConState.verticalswing = newVerticalswing;
       changed=true;
     }
     return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;

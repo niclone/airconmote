@@ -30,6 +30,12 @@ class MODE {
     static const byte AIR                 = 0x06;
 };
 
+class VERTICALSWING {
+  public:
+    static const byte OFF                 = 0x00;
+    static const byte ON                  = 0x01;
+};
+
 class AirConDaikin : AirConDevice {
   public:
     AirConDaikin();
@@ -46,6 +52,7 @@ class AirConDaikin : AirConDevice {
     byte outBuffer[16], inBuffer[16];
     int inBufferIndex;
     uint32_t latestmsg;
+    byte registers[0x25][5];
 
     void loopAskState();
     void initSerial();
@@ -53,9 +60,11 @@ class AirConDaikin : AirConDevice {
     void decodeInputMessage();
     void decodeRegisterAnswer(byte *msg, int len);
     void decodeRegister2Answer(byte *msg, int len);
-    void decodeRegisterAnswerMode(byte *inMessage, int len);
+    void decodeRegisterMode();
+    void decodeRegisterFlowairDirection();
     void sendMessage(byte packet[], int length);
     void sendMode(bool onoff, String mode, float temp, int flowspeed);
+    void sendSwing(bool vertical, bool horizontal);
 };
 
 #endif

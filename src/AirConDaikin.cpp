@@ -13,6 +13,7 @@ AirConDaikin::~AirConDaikin() {
 
 void AirConDaikin::setState(AirConState *newstate) {
     sendMode(newstate->onoff, newstate->mode, newstate->temperature, newstate->flowspeed);
+    sendSwing(newstate->verticalswing, false);
 }
 
 AirConState *AirConDaikin::getState() {
@@ -80,6 +81,7 @@ void AirConDaikin::decodeInputMessage() {
     }
 
     int len = inBufferIndex-4;
+
     switch(inMessage[0]) {
         case MSGCODE::REGISTER_ANSWER: decodeRegisterAnswer(inMessage, len);
         case MSGCODE::REGISTER2_ANSWER: decodeRegister2Answer(inMessage, len);
@@ -87,11 +89,17 @@ void AirConDaikin::decodeInputMessage() {
 }
 
 void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
+    // update local registers
+    if (inMessage[0] > 0 && inMessage[0] < 0x25) {
+        memcpy(&registers[inMessage[0]], &inMessage[1], 4);
+    }
+
     switch(inMessage[0]) {
         case REGISTER::MODE:
-            decodeRegisterAnswerMode(&inMessage[1], len-1);
+            decodeRegisterMode();
             break;
         case REGISTER::FLOWAIR_DIRECTION:
+            decodeRegisterFlowairDirection();
             break;
         case REGISTER::MODE_POWER:
             break;
@@ -100,21 +108,32 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
     }
 }
 
-void AirConDaikin::decodeRegister2Answer(byte *inMessage, int len) {
-
-}
-
-void AirConDaikin::decodeRegisterAnswerMode(byte *inMessage, int len) {
-    realState.onoff = inMessage[0] == 0x01 ? true : false;
-    switch(inMessage[1]) {
+void AirConDaikin::decodeRegisterMode() {
+    const byte *reg = registers[REGISTER::MODE];
+    realState.onoff = reg[0] == 0x01 ? true : false;
+    switch(reg[1]) {
         case MODE::AUTO: realState.mode = "auto"; break;
         case MODE::DRY:  realState.mode = "dry";  break;
         case MODE::SNOW: realState.mode = "snow"; break;
         case MODE::HEAT: realState.mode = "heat"; break;
         case MODE::AIR:  realState.mode = "air";  break;
     }
-    realState.temperature = inMessage[2] / 2.0 + 10.0;
-    realState.flowspeed = inMessage[3];
+    realState.temperature = reg[2] / 2.0 + 10.0;
+    realState.flowspeed = reg[3];
+}
+
+void AirConDaikin::decodeRegisterFlowairDirection() {
+    const byte *reg = registers[REGISTER::FLOWAIR_DIRECTION];
+    realState.onoff = reg[0] == 0x01 ? true : false;
+    switch(reg[1]) {
+        case VERTICALSWING::OFF: realState.verticalswing = false; break;
+        case VERTICALSWING::ON:  realState.verticalswing = true;  break;
+    }
+}
+
+
+void AirConDaikin::decodeRegister2Answer(byte *inMessage, int len) {
+
 }
 
 void AirConDaikin::sendMessage(byte message[], int length) {
@@ -134,7 +153,7 @@ void AirConDaikin::sendMessage(byte message[], int length) {
 }
 
 void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) {
-    byte message[6];
+    byte message[6]={0,0,0,0,0,0};
     message[0] = MSGCODE::WRITE_REGISTER;
     message[1] = REGISTER::MODE;
 
@@ -169,4 +188,23 @@ void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) 
     }
 
     sendMessage(message, sizeof(message));
+}
+
+void AirConDaikin::sendSwing(bool vertical, bool horizontal) {
+    byte message[6]={0,0,0,0,0,0};
+    message[0] = MSGCODE::WRITE_REGISTER;
+    message[1] = REGISTER::MODE;
+
+    // encode vertical swing :
+    message[2] = vertical ? VERTICALSWING::ON : VERTICALSWING::OFF;
+    message[3] = vertical ? 15 : 0;
+
+    message[4] = horizontal ? VERTICALSWING::ON : VERTICALSWING::OFF;
+    message[5] = horizontal ? 15 : 0;
+
+    sendMessage(message, sizeof(message));
+}
+
+bool isRegisterDiff(byte message[5]) {
+
 }

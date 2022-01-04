@@ -13,6 +13,7 @@ export interface AirConState {
     mode: string;
     temperature: number;
     flowspeed: number;
+    verticalswing: boolean;
 }
 
 export interface AirConMqttSettings {

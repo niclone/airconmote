@@ -2,7 +2,7 @@
   "name": "interface2",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://10.11.12.224",
+  "proxy": "http://10.11.12.221",
   "dependencies": {
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",

@@ -42,7 +42,8 @@ void AirConStateService::begin() {
   _state.mode = DEFAULT_MODE;
   _state.temperature = DEFAULT_TEMPERATURE;
   _state.flowspeed = DEFAULT_FLOWSPEED;
-  onConfigUpdated();
+  _state.verticalswing = DEFAULT_VERTICALSWING;
+  //onConfigUpdated();
 }
 
 void AirConStateService::loop() {

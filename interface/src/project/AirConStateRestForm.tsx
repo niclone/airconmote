@@ -32,7 +32,7 @@ const AirConStateRestForm: FC = () => {
     let newdata = { ...data!, ...newconf};
     AirConApi.updateAirConState(newdata).then(answer => {
         setData(answer.data);
-    })
+    });
   };
 
   const updateFormValue = updateValue(setData);
@@ -121,7 +121,7 @@ const AirConStateRestForm: FC = () => {
         />
         <BlockFormControlLabel
           control={
-            <Box sx={{ width: 300, margin: 1 }}>
+            <Box sx={{ width: 300 }}>
                 <Slider
                     name="temperature"
                     disabled={saving}
@@ -140,7 +140,7 @@ const AirConStateRestForm: FC = () => {
           }
           label="Temperature"
           labelPlacement='start'
-          sx={sxBlockForm}
+          sx={{...sxBlockForm, marginTop: 5}}
         />
         <BlockFormControlLabel
           control={
@@ -167,7 +167,7 @@ const AirConStateRestForm: FC = () => {
         />
         <BlockFormControlLabel
           control={
-            <Box sx={{ width: 300, margin: 1 }}>
+            <Box sx={{ width: 300 }}>
                 <Slider
                     aria-label="Flow Speed"
                     defaultValue={data.flowspeed-2}
@@ -180,6 +180,20 @@ const AirConStateRestForm: FC = () => {
             </Box>
           }
           label="Flow Speed"
+          labelPlacement='start'
+          sx={{...sxBlockForm, marginTop: 2}}
+        />
+        <BlockFormControlLabel
+          control={
+            <Switch
+              name="verticalswing"
+              disabled={saving}
+              checked={data.verticalswing}
+              onChange={(ev) => myUpdateData({...data, verticalswing: ev.target.checked})}
+              color="primary"
+            />
+          }
+          label="Vertical Swing"
           labelPlacement='start'
           sx={sxBlockForm}
         />
