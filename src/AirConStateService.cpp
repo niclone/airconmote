@@ -32,17 +32,12 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
   // configure update handler for when the airCon settings change
   _airConMqttSettingsService->addUpdateHandler([&](const String& originId) { registerConfig(); }, false);
 
-  // configure settings service update handler to update LED state
+  // configure settings service update handler to update aircon state
   addUpdateHandler([&](const String& originId) { onConfigUpdated(); }, false);
 }
 
 void AirConStateService::begin() {
   aircondevice = (AirConDevice *)new AirConDaikin();
-  _state.onoff = DEFAULT_ONOFF;
-  _state.mode = DEFAULT_MODE;
-  _state.temperature = DEFAULT_TEMPERATURE;
-  _state.flowspeed = DEFAULT_FLOWSPEED;
-  _state.verticalswing = DEFAULT_VERTICALSWING;
   //onConfigUpdated();
 }
 
@@ -52,7 +47,7 @@ void AirConStateService::loop() {
 
 void AirConStateService::onConfigUpdated() {
   //digitalWrite(LED_PIN, _state.ledOn ? LED_ON : LED_OFF);
-  aircondevice->setState(&_state);
+  //aircondevice->setState(&_state);
 }
 
 void AirConStateService::registerConfig() {
