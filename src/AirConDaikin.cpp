@@ -13,9 +13,7 @@ AirConDaikin::AirConDaikin(AirConStateService *stateService) {
             Serial.print("The aircon's state has been updated by: ");
             Serial.println(originId);
             if (originId != "device") {
-                Serial.printf("this->stateService: %p, stateService: %p\n", this->stateService, stateService);
                 this->stateService->read([&](AirConState& state) {
-                    Serial.println("readed...");
                     setState(&state);
                 });
             }
@@ -31,7 +29,7 @@ AirConDaikin::~AirConDaikin() {
 }
 
 void AirConDaikin::setState(AirConState *newstate) {
-    Serial.println("setting state to device ...");
+    //Serial.println("setting state to device ...");
     sendMode(newstate->onoff, newstate->mode, newstate->temperature, newstate->flowspeed);
     sendSwing(newstate->verticalswing, false);
 }
@@ -62,7 +60,7 @@ void AirConDaikin::readSerial() {
     while(serial->available()) {
         byte b;
         size_t readed = serial->readBytes(&b, 1);
-        Serial.printf("got hex : %x\n", b);
+        //Serial.printf("got hex : %x\n", b);
         if (readed != 1) {
             // something bad happened !
             Serial.printf("read error: %d\n", readed);
@@ -98,7 +96,7 @@ void AirConDaikin::readSerial() {
 }
 
 void AirConDaikin::decodeInputMessage() {
-    Serial.printf("decodeInputMessage: %x %x (...)\n", inBuffer[0], inBuffer[1]);
+    //Serial.printf("decodeInputMessage: %x %x (...)\n", inBuffer[0], inBuffer[1]);
 
     byte inMessage[sizeof(inBuffer-4)];
     for (int i=2; i<inBufferIndex-2; i++) {
@@ -107,7 +105,7 @@ void AirConDaikin::decodeInputMessage() {
 
     int len = inBufferIndex-4;
 
-    Serial.printf("inMessage(%d): %x %x (...)\n", len, inMessage[0], inMessage[1]);
+    //Serial.printf("inMessage(%d): %x %x (...)\n", len, inMessage[0], inMessage[1]);
 
     switch(inMessage[0]) {
         case MSGCODE::REGISTER_ANSWER: decodeRegisterAnswer(&inMessage[1], len); break;
@@ -116,7 +114,7 @@ void AirConDaikin::decodeInputMessage() {
 }
 
 void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
-    Serial.printf("decodeRegisterAnswer: %x %x (...)", inMessage[0], inMessage[1]);
+    //Serial.printf("decodeRegisterAnswer: %x %x (...)", inMessage[0], inMessage[1]);
     // update local registers
     if (inMessage[0] > 0 && inMessage[0] < 0x25) {
         memcpy(&registers[inMessage[0]], &inMessage[1], 4);
@@ -137,7 +135,7 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
 }
 
 void AirConDaikin::decodeRegisterMode() {
-    Serial.println("decoding mode state of device ...");
+    //Serial.println("decoding mode state of device ...");
     const byte *reg = registers[REGISTER::MODE];
     bool onoff = reg[0] == 0x01 ? true : false;
     String mode;
@@ -172,7 +170,7 @@ void AirConDaikin::decodeRegisterMode() {
 }
 
 void AirConDaikin::decodeRegisterFlowairDirection() {
-    Serial.println("decoding flowair state of device ...");
+    //Serial.println("decoding flowair state of device ...");
     const byte *reg = registers[REGISTER::FLOWAIR_DIRECTION];
     stateService->update([&](AirConState& state) {
         bool changed = false;
@@ -191,11 +189,11 @@ void AirConDaikin::decodeRegisterFlowairDirection() {
 
 
 void AirConDaikin::decodeRegister2Answer(byte *inMessage, int len) {
-    Serial.printf("decodeRegister2Answer: %x %x (...)", inMessage[0], inMessage[1]);
+    //Serial.printf("decodeRegister2Answer: %x %x (...)", inMessage[0], inMessage[1]);
 }
 
 void AirConDaikin::sendMessage(byte message[], int length) {
-    Serial.printf("sendMessage: %x %x (...)\n", message[0], message[1]);
+    //Serial.printf("sendMessage: %x %x (...)\n", message[0], message[1]);
     outBuffer[0]=0x06;
     outBuffer[1]=0x02;
     byte checksum=0;
