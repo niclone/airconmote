@@ -98,18 +98,18 @@ void AirConDaikin::readSerial() {
 void AirConDaikin::decodeInputMessage() {
     //Serial.printf("decodeInputMessage: %x %x (...)\n", inBuffer[0], inBuffer[1]);
 
-    byte inMessage[sizeof(inBuffer-4)];
-    for (int i=2; i<inBufferIndex-2; i++) {
+    byte inMessage[sizeof(inBuffer-2)];
+    for (int i=2; i<inBufferIndex; i++) {
         inMessage[i-2]=inBuffer[i] - 0x30;
     }
 
-    int len = inBufferIndex-4;
+    int len = inBufferIndex-2;
 
     //Serial.printf("inMessage(%d): %x %x (...)\n", len, inMessage[0], inMessage[1]);
 
     switch(inMessage[0]) {
-        case MSGCODE::REGISTER_ANSWER: decodeRegisterAnswer(&inMessage[1], len); break;
-        case MSGCODE::REGISTER2_ANSWER: decodeRegister2Answer(&inMessage[1], len); break;
+        case MSGCODE::REGISTER_ANSWER: decodeRegisterAnswer(&inMessage[1], len-1); break;
+        case MSGCODE::REGISTER2_ANSWER: decodeRegister2Answer(&inMessage[1], len-1); break;
     }
 }
 
