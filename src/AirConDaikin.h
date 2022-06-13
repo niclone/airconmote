@@ -2,6 +2,7 @@
 #define AirConDaikin_h
 
 #include "AirConDevice.h"
+#include "AirConStateService.h"
 
 class MSGCODE {
   public:
@@ -38,7 +39,7 @@ class VERTICALSWING {
 
 class AirConDaikin : AirConDevice {
   public:
-    AirConDaikin();
+    AirConDaikin(AirConStateService *stateService);
     ~AirConDaikin();
 
     void setState(AirConState *newStatus);
@@ -46,8 +47,9 @@ class AirConDaikin : AirConDevice {
     void loop();
 
   private:
+    AirConStateService *stateService;
+    update_handler_id_t myUpdateHandler;
     HardwareSerial *serial;
-    AirConState realState;
     int latestAskedState;
     byte outBuffer[16], inBuffer[16];
     int inBufferIndex;

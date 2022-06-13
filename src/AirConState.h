@@ -17,6 +17,8 @@ class AirConState {
   float temperature;
   int flowspeed;
   bool verticalswing;
+  float sensor_temp_inside;
+  float sensor_temp_outside;
 
   static void read(AirConState& settings, JsonObject& root) {
     root["onoff"] = settings.onoff;
@@ -24,6 +26,8 @@ class AirConState {
     root["temperature"] = settings.temperature;
     root["flowspeed"] = settings.flowspeed;
     root["verticalswing"] = settings.verticalswing;
+    root["sensor_temp_inside"] = settings.sensor_temp_inside;
+    root["sensor_temp_outside"] = settings.sensor_temp_outside;
   }
 
   static StateUpdateResult update(JsonObject& root, AirConState& airConState) {

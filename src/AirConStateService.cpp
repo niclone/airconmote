@@ -37,7 +37,7 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
 }
 
 void AirConStateService::begin() {
-  aircondevice = (AirConDevice *)new AirConDaikin();
+  aircondevice = (AirConDevice *)new AirConDaikin(this);
   //onConfigUpdated();
 }
 

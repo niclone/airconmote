@@ -1,17 +1,37 @@
 #include "AirConDaikin.h"
 
-AirConDaikin::AirConDaikin() {
+AirConDaikin::AirConDaikin(AirConStateService *stateService) {
+    this->stateService = stateService;
     initSerial();
     latestAskedState=0;
     inBufferIndex=0;
     latestmsg=0;
+
+    // register an update handler
+    myUpdateHandler = stateService->addUpdateHandler(
+        [&](const String& originId) {
+            Serial.print("The aircon's state has been updated by: ");
+            Serial.println(originId);
+            if (originId != "device") {
+                Serial.printf("this->stateService: %p, stateService: %p\n", this->stateService, stateService);
+                this->stateService->read([&](AirConState& state) {
+                    Serial.println("readed...");
+                    setState(&state);
+                });
+            }
+        }
+    );
 }
 
 AirConDaikin::~AirConDaikin() {
+    // remove the update handler
+    stateService->removeUpdateHandler(myUpdateHandler);
+
     serial->end();
 }
 
 void AirConDaikin::setState(AirConState *newstate) {
+    Serial.println("setting state to device ...");
     sendMode(newstate->onoff, newstate->mode, newstate->temperature, newstate->flowspeed);
     sendSwing(newstate->verticalswing, false);
 }
@@ -109,26 +129,56 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
 }
 
 void AirConDaikin::decodeRegisterMode() {
+    Serial.println("decoding mode state of device ...");
     const byte *reg = registers[REGISTER::MODE];
-    realState.onoff = reg[0] == 0x01 ? true : false;
+    bool onoff = reg[0] == 0x01 ? true : false;
+    String mode;
     switch(reg[1]) {
-        case MODE::AUTO: realState.mode = "auto"; break;
-        case MODE::DRY:  realState.mode = "dry";  break;
-        case MODE::SNOW: realState.mode = "snow"; break;
-        case MODE::HEAT: realState.mode = "heat"; break;
-        case MODE::AIR:  realState.mode = "air";  break;
+        case MODE::AUTO: mode = "auto"; break;
+        case MODE::DRY:  mode = "dry";  break;
+        case MODE::SNOW: mode = "snow"; break;
+        case MODE::HEAT: mode = "heat"; break;
+        case MODE::AIR:  mode = "air";  break;
     }
-    realState.temperature = reg[2] / 2.0 + 10.0;
-    realState.flowspeed = reg[3];
+    float temperature = reg[2] / 2.0 + 10.0;
+    int flowspeed = reg[3];
+
+    stateService->update([&](AirConState& state) {
+        bool changed = false;
+        if (state.onoff != onoff) {
+            state.onoff = onoff;
+            changed=true;
+        }
+        if (state.mode != mode) {
+            state.mode = mode;
+            changed=true;
+        }
+        if (state.temperature != temperature) {
+            state.temperature = temperature;
+        }
+        if (state.flowspeed != flowspeed) {
+            state.flowspeed = flowspeed;
+        }
+        return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
+    }, "device");
 }
 
 void AirConDaikin::decodeRegisterFlowairDirection() {
+    Serial.println("decoding flowair state of device ...");
     const byte *reg = registers[REGISTER::FLOWAIR_DIRECTION];
-    realState.onoff = reg[0] == 0x01 ? true : false;
-    switch(reg[1]) {
-        case VERTICALSWING::OFF: realState.verticalswing = false; break;
-        case VERTICALSWING::ON:  realState.verticalswing = true;  break;
-    }
+    stateService->update([&](AirConState& state) {
+        bool changed = false;
+        bool verticalswing = state.verticalswing;
+        switch(reg[1]) {
+            case VERTICALSWING::OFF: verticalswing = false; break;
+            case VERTICALSWING::ON:  verticalswing = true;  break;
+        }
+        if (verticalswing != state.verticalswing) {
+            state.verticalswing = verticalswing;
+            changed = true;
+        }
+        return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
+    }, "device");
 }
 
 
