@@ -67,6 +67,23 @@ const AirConStateWebSocketForm: FC = () => {
       return (<FormLoader message="Connecting to WebSocket…" />);
     }
 
+    let registersHtml = (
+        <table>
+            <tbody>
+                {data.registers.map((row, registerNum) => { return (
+                    <tr key={registerNum}>
+                        <th>{registerNum}</th>
+                        <td>{row[0]}</td>
+                        <td>{row[1]}</td>
+                        <td>{row[2]}</td>
+                        <td>{row[3]}</td>
+                        <td>{row[4]}</td>
+                    </tr>
+                )})}
+            </tbody>
+        </table>
+    )
+
     return (
         <>
           <BlockFormControlLabel
@@ -191,6 +208,7 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
             sx={sxBlockForm}
           />
+          {registersHtml}
         </>
       );
   };

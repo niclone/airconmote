@@ -116,9 +116,32 @@ void AirConDaikin::decodeInputMessage() {
 void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
     //Serial.printf("decodeRegisterAnswer: %x %x (...)", inMessage[0], inMessage[1]);
     // update local registers
-    if (inMessage[0] > 0 && inMessage[0] < 0x25) {
-        memcpy(&registers[inMessage[0]], &inMessage[1], 4);
+    int registernum = inMessage[0];
+    if (registernum > 0 && registernum < 0x25) {
+        memcpy(&registers[registernum], &inMessage[1], 5);
+
+            /*
+            printf("register1 [%x] : %x %x %x %x %x\n",
+                registernum,
+                registers[registernum][0],
+                registers[registernum][1],
+                registers[registernum][2],
+                registers[registernum][3],
+                registers[registernum][4]
+            );
+            */
+
+        stateService->update([&](AirConState& state) {
+
+            bool changed = false;
+            if (memcmp(&registers[registernum], &state.registers[registernum], 5) != 0) {
+                memcpy(&state.registers[registernum], &inMessage[1], 5);
+                changed = true;
+            }
+            return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
+        }, "device");
     }
+
 
     switch(inMessage[0]) {
         case REGISTER::MODE:
@@ -262,6 +285,6 @@ void AirConDaikin::sendSwing(bool vertical, bool horizontal) {
     sendMessage(message, sizeof(message));
 }
 
-bool isRegisterDiff(byte message[5]) {
+bool isRegisterDiff(int idx, byte message[5]) {
 
 }

@@ -14,6 +14,7 @@ export interface AirConState {
     temperature: number;
     flowspeed: number;
     verticalswing: boolean;
+    registers: Array<Array<number>>;
 }
 
 export interface AirConMqttSettings {

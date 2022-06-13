@@ -20,7 +20,7 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
                server,
                AIRCON_SETTINGS_SOCKET_PATH,
                securityManager,
-               AuthenticationPredicates::IS_AUTHENTICATED),
+               AuthenticationPredicates::IS_AUTHENTICATED, 4096U),
     _mqttClient(mqttClient),
     _airConMqttSettingsService(airConMqttSettingsService) {
   // configure led to be output
