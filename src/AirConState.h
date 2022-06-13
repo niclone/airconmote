@@ -19,8 +19,10 @@ class AirConState {
   bool verticalswing;
   float sensor_temp_inside;
   float sensor_temp_outside;
+  byte registers[0x25][5];
 
   static void read(AirConState& settings, JsonObject& root) {
+      //printf("root size1: %d\n", root.memoryUsage());
     root["onoff"] = settings.onoff;
     root["mode"] = settings.mode;
     root["temperature"] = settings.temperature;
@@ -28,6 +30,25 @@ class AirConState {
     root["verticalswing"] = settings.verticalswing;
     root["sensor_temp_inside"] = settings.sensor_temp_inside;
     root["sensor_temp_outside"] = settings.sensor_temp_outside;
+    JsonArray jregisters = root.createNestedArray("registers");
+      //printf("root size2: %d\n", root.memoryUsage());
+    for (int i=0; i<0x25; i++) {
+        JsonArray nested = jregisters.createNestedArray();
+            /*
+            printf("adding [%x] : %x %x %x %x %x\n",
+                i,
+                settings.registers[i][0],
+                settings.registers[i][1],
+                settings.registers[i][2],
+                settings.registers[i][3],
+                settings.registers[i][4]
+            );
+            */
+        for (int j=0; j<5; j++) {
+            nested.add(settings.registers[i][j]);
+        }
+    }
+      //printf("root size3: %d\n", root.memoryUsage());
   }
 
   static StateUpdateResult update(JsonObject& root, AirConState& airConState) {
