@@ -64,6 +64,7 @@ class AirConDaikin : AirConDevice {
     void decodeRegister2Answer(byte *msg, int len);
     void decodeRegisterMode();
     void decodeRegisterFlowairDirection();
+    void decodeRegisterTempSensors();
     void sendMessage(byte packet[], int length);
     void sendMode(bool onoff, String mode, float temp, int flowspeed);
     void sendSwing(bool vertical, bool horizontal);

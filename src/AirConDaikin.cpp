@@ -153,6 +153,7 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
         case REGISTER::MODE_POWER:
             break;
         case REGISTER::TEMP_SENSORS:
+            decodeRegisterTempSensors();
             break;
     }
 }
@@ -205,6 +206,26 @@ void AirConDaikin::decodeRegisterFlowairDirection() {
         if (verticalswing != state.verticalswing) {
             state.verticalswing = verticalswing;
             changed = true;
+        }
+        return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
+    }, "device");
+}
+
+void AirConDaikin::decodeRegisterTempSensors() {
+    //Serial.println("decoding mode state of device ...");
+    const byte *reg = registers[REGISTER::TEMP_SENSORS];
+    float temp_inside = reg[0] / 2.0 - 40.0;
+    float temp_outside = reg[1] / 2.0 - 40.0;
+
+    stateService->update([&](AirConState& state) {
+        bool changed = false;
+        if (state.sensor_temp_inside != temp_inside) {
+            state.sensor_temp_inside = temp_inside;
+            changed=true;
+        }
+        if (state.sensor_temp_outside != temp_outside) {
+            state.sensor_temp_outside = temp_outside;
+            changed=true;
         }
         return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
     }, "device");
