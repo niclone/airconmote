@@ -1,0 +1,6 @@
+table.registers td {
+    min-width: 2em;
+}
+table.registers th {
+    min-width: 2em;
+}

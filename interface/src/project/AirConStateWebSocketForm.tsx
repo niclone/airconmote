@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Switch, Slider, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
@@ -18,15 +18,37 @@ import { updateValue, useWs } from '../utils';
 //import ToggleButton from '@mui/material/ToggleButton';
 //import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
+import './AirConStateWebSocketForm.css';
+
 import { AirConState } from './types';
+import { MapsHomeWork } from '@mui/icons-material';
 
 export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 
 const AirConStateWebSocketForm: FC = () => {
   const { connected, updateData, data } = useWs<AirConState>(AIRCON_SETTINGS_WEBSOCKET_URL);
+  const [ oldRegisters, setOldRegisters ] = useState<number[][]>([]);
   const saving = false; // hack
 
-  console.log("ws data: ", data);
+  const registers = data && data.registers ? data.registers : [];
+
+  if (registers.length > 0 && oldRegisters.length === 0) {
+    setOldRegisters(registers);
+  }
+
+  let origRegisters = registers.map((row, regNum) => {
+    //let changed = false;
+    let oldRow = oldRegisters[regNum];
+    if (JSON.stringify(row) !== JSON.stringify(oldRow)) {
+      return oldRow;
+      //oldRegisters[regNum]=row;
+      //changed=true;
+    } else {
+      return [];
+    }
+    //if (changed) setOldRegisters(oldRegisters);
+  });
+
 
   const updateFormValue = updateValue(updateData);
   const sxBlockForm={
@@ -68,7 +90,7 @@ const AirConStateWebSocketForm: FC = () => {
     }
 
     let registersHtml = (
-        <table>
+        <table className={"registers"}>
             <tbody>
                 {data.registers.map((row, registerNum) => { return (
                     <tr key={registerNum}>
@@ -78,6 +100,12 @@ const AirConStateWebSocketForm: FC = () => {
                         <td>{row[2]}</td>
                         <td>{row[3]}</td>
                         <td>{row[4]}</td>
+                        <th> original: </th>
+                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][0] : ''}</td>
+                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][1] : ''}</td>
+                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][2] : ''}</td>
+                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][3] : ''}</td>
+                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][4] : ''}</td>
                     </tr>
                 )})}
             </tbody>
