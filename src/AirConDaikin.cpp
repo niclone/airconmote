@@ -49,7 +49,7 @@ void AirConDaikin::loop() {
 }
 
 void AirConDaikin::loopAskState() {
-    if (millis() - latestmsg > 5000) {
+    if (millis() - latestmsg > 500) {
         if (++latestAskedState > 0x24) latestAskedState=0x01;
         byte msg[]={MSGCODE::READ_REGISTER, (byte)latestAskedState};
         sendMessage(msg, sizeof(msg));
