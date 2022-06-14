@@ -114,6 +114,9 @@ const AirConStateWebSocketForm: FC = () => {
 
     return (
         <>
+          <div>
+            Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
+          </div>
           <BlockFormControlLabel
             control={
               <Switch

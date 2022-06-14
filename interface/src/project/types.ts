@@ -14,6 +14,8 @@ export interface AirConState {
     temperature: number;
     flowspeed: number;
     verticalswing: boolean;
+    sensor_temp_inside: number;
+    sensor_temp_outside: number;
     registers: Array<Array<number>>;
 }
 
