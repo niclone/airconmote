@@ -2,9 +2,6 @@ import { FC, useEffect, useState } from 'react';
 
 import { Switch, Slider, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-// @ts-ignore
-import CircularSlider from '@fseehawer/react-circular-slider';
-
 import ThermostatAutoIcon from '@mui/icons-material/ThermostatAuto';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
@@ -17,6 +14,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 
 import { WEB_SOCKET_ROOT } from '../api/endpoints';
 import { BlockFormControlLabel, FormLoader, MessageBox, SectionContent } from '../components';
+import Temperature from '../components/inputs/Temperature';
 import { updateValue, useWs } from '../utils';
 //import ToggleButton from '@mui/material/ToggleButton';
 //import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -59,37 +57,6 @@ const AirConStateWebSocketForm: FC = () => {
         width: 125,
     },
   };
-
-  const temperatureMarks = [
-    {
-      value: 10,
-      label: '10°C',
-    },
-    {
-      value: 15,
-      label: '15°C',
-    },
-    {
-      value: 20,
-      label: '20°C',
-    },
-    {
-      value: 25,
-      label: '25°C',
-    },
-    {
-      value: 30,
-      label: '30°C',
-    },
-  ];
-
-  const temperatures = [
-    "10.0°", "10.5°", "11.0°", "11.5°", "12.0°", "12.5°", "13.0°", "13.5°", "14.0°", "14.5°",
-    "15.0°", "15.5°", "16.0°", "16.5°", "17.0°", "17.5°", "18.0°", "18.5°", "19.0°", "19.5°",
-    "20.0°", "20.5°", "21.0°", "21.5°", "22.0°", "22.5°", "23.0°", "23.5°", "24.0°", "24.5°",
-    "25.0°", "25.5°", "26.0°", "26.5°", "27.0°", "27.5°", "28.0°", "28.5°", "29.0°", "29.5°",
-    "30.0°"
-  ];
 
   function temperatureText(value: number) {
     return `${value}°C`;
@@ -142,7 +109,7 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
             sx={sxBlockForm}
           />
-        <BlockFormControlLabel
+          <BlockFormControlLabel
             control={
               <ToggleButtonGroup
               exclusive
@@ -171,26 +138,9 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
             sx={sxBlockForm}
           />
-          <CircularSlider
-            label="temperature"
-            labelColor="#005a58"
-            knobColor="#005a58"
-            knobPosition="bottom"
-            progressColorFrom="#00ffff"
-            progressColorTo="#ff77ff"
-            progressSize={34}
-            trackColor="#eeeeee"
-            trackSize={36}
-            //data={["1€","2€"]} //...
-            data={temperatures}
-            //appendToValue={"°"}
-            //min={10}
-            //max={30}
-            dataIndex={ temperatures.findIndex(v => parseFloat(v)==data.temperature) }
-            labelFontSize="1.5rem"
-            valueFontSize="4rem"
-            onChange={ (value: any) => { updateData({...data!, temperature: parseFloat(""+value)}) } }
-        />
+
+          <Temperature value={data.temperature} onChange={(value: any) => { updateData({...data!, temperature: parseFloat(""+value)}) }}/>
+
           <BlockFormControlLabel
             control={
               <ToggleButtonGroup
