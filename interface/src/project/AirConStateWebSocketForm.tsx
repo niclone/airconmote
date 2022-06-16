@@ -1,6 +1,11 @@
 import { FC, useEffect, useState } from 'react';
 
 import { Switch, Slider, Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import ThermostatAutoIcon from '@mui/icons-material/ThermostatAuto';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
@@ -153,7 +158,18 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
             sx={sxBlockForm}
           />
-          <AdvancedRegisters registers={data.registers}/>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Advanced debug registers</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <AdvancedRegisters registers={data.registers}/>
+            </AccordionDetails>
+          </Accordion>
         </>
       );
   };
