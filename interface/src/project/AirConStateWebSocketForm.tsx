@@ -45,6 +45,7 @@ const AirConStateWebSocketForm: FC = () => {
           <div>
             Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
           </div>
+
           <BlockFormControlLabel
             control={
               <Switch
@@ -59,9 +60,9 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
           />
 
-          <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})}/>
+          <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
-          <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }}/>
+          <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
 
           <BlockFormControlLabel
             control={
@@ -132,11 +133,14 @@ const AirConStateWebSocketForm: FC = () => {
       );
   };
 
+  return content();
+  /*
   return (
     <SectionContent title='WebSocket Example' titleGutter>
       {content()}
     </SectionContent>
   );
+  */
 };
 
 export default AirConStateWebSocketForm;
