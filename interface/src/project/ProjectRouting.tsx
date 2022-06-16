@@ -9,7 +9,7 @@ const ProjectRouting: FC = () => {
       {
         // Add the default route for your project below
       }
-      <Route path="/*" element={<Navigate to="aircon/rest" />} />
+      <Route path="/*" element={<Navigate to="aircon/" />} />
       {
         // Add your project page routes below.
       }
