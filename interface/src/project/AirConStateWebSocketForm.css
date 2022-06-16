@@ -4,3 +4,7 @@ table.registers td {
 table.registers th {
     min-width: 2em;
 }
+
+code {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
