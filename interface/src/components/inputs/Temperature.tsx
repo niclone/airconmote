@@ -12,7 +12,7 @@ const temperatures = [
 
 type Props = {
     value: number,
-    onChange: any,
+    onChange: (temperature: number) => void,
 }
 
 export default function Temperature({ value, onChange}: Props) {

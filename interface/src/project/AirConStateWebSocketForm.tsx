@@ -61,7 +61,7 @@ const AirConStateWebSocketForm: FC = () => {
 
           <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})}/>
 
-          <Temperature value={data.temperature} onChange={(value: any) => { updateData({...data!, temperature: parseFloat(""+value)}) }}/>
+          <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }}/>
 
           <BlockFormControlLabel
             control={
