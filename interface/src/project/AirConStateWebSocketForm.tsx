@@ -15,6 +15,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 import { WEB_SOCKET_ROOT } from '../api/endpoints';
 import { BlockFormControlLabel, FormLoader, MessageBox, SectionContent } from '../components';
 import Temperature from '../components/inputs/Temperature';
+import AdvancedRegisters from '../components/advanced/AdvancedRegisters';
 import { updateValue, useWs } from '../utils';
 //import ToggleButton from '@mui/material/ToggleButton';
 //import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -28,28 +29,7 @@ export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 
 const AirConStateWebSocketForm: FC = () => {
   const { connected, updateData, data } = useWs<AirConState>(AIRCON_SETTINGS_WEBSOCKET_URL);
-  const [ oldRegisters, setOldRegisters ] = useState<number[][]>([]);
   const saving = false; // hack
-
-  const registers = data && data.registers ? data.registers : [];
-
-  if (registers.length > 0 && oldRegisters.length === 0) {
-    setOldRegisters(registers);
-  }
-
-  let origRegisters = registers.map((row, regNum) => {
-    //let changed = false;
-    let oldRow = oldRegisters[regNum];
-    if (JSON.stringify(row) !== JSON.stringify(oldRow)) {
-      return oldRow;
-      //oldRegisters[regNum]=row;
-      //changed=true;
-    } else {
-      return [];
-    }
-    //if (changed) setOldRegisters(oldRegisters);
-  });
-
 
   const updateFormValue = updateValue(updateData);
   const sxBlockForm={
@@ -66,29 +46,6 @@ const AirConStateWebSocketForm: FC = () => {
     if (!connected || !data) {
       return (<FormLoader message="Connecting to WebSocket…" />);
     }
-
-    let registersHtml = (
-        <table className={"registers"}>
-            <tbody>
-                {data.registers.map((row, registerNum) => { return (
-                    <tr key={registerNum}>
-                        <th>{registerNum}</th>
-                        <td>{row[0]}</td>
-                        <td>{row[1]}</td>
-                        <td>{row[2]}</td>
-                        <td>{row[3]}</td>
-                        <td>{row[4]}</td>
-                        <th> original: </th>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][0] : ''}</td>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][1] : ''}</td>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][2] : ''}</td>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][3] : ''}</td>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][4] : ''}</td>
-                    </tr>
-                )})}
-            </tbody>
-        </table>
-    )
 
     return (
         <>
@@ -196,7 +153,7 @@ const AirConStateWebSocketForm: FC = () => {
             labelPlacement='start'
             sx={sxBlockForm}
           />
-          {registersHtml}
+          <AdvancedRegisters registers={data.registers}/>
         </>
       );
   };
