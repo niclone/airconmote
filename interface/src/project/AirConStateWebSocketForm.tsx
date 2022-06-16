@@ -7,12 +7,6 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import ThermostatAutoIcon from '@mui/icons-material/ThermostatAuto';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import FormatColorResetIcon from '@mui/icons-material/FormatColorReset';
-import AirIcon from '@mui/icons-material/Air';
-
 import HdrAutoOutlinedIcon from '@mui/icons-material/HdrAutoOutlined';
 import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -22,13 +16,12 @@ import { BlockFormControlLabel, FormLoader, MessageBox, SectionContent } from '.
 import Temperature from '../components/inputs/Temperature';
 import AdvancedRegisters from '../components/advanced/AdvancedRegisters';
 import { updateValue, useWs } from '../utils';
-//import ToggleButton from '@mui/material/ToggleButton';
-//import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import './AirConStateWebSocketForm.css';
 
 import { AirConState } from './types';
 import { MapsHomeWork } from '@mui/icons-material';
+import AirconMode from '../components/inputs/AirconMode';
 
 export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 
@@ -37,11 +30,6 @@ const AirConStateWebSocketForm: FC = () => {
   const saving = false; // hack
 
   const updateFormValue = updateValue(updateData);
-  const sxBlockForm={
-    ".MuiFormControlLabel-label": {
-        width: 125,
-    },
-  };
 
   function temperatureText(value: number) {
     return `${value}°C`;
@@ -69,37 +57,9 @@ const AirConStateWebSocketForm: FC = () => {
             }
             label="Power"
             labelPlacement='start'
-            sx={sxBlockForm}
           />
-          <BlockFormControlLabel
-            control={
-              <ToggleButtonGroup
-              exclusive
-              aria-label="AirCon Mode"
-              sx={{ margin: 1 }}
-              onChange={(ev, v) => updateData({...data!, mode: ""+v}) }
-              >
-              <ToggleButton value="auto" aria-label="Automatic" selected={data.mode === "auto"}>
-                <ThermostatAutoIcon />
-              </ToggleButton>
-              <ToggleButton value="snow" aria-label="Air Conditionned" selected={data.mode === "snow"}>
-                <AcUnitIcon />
-              </ToggleButton>
-              <ToggleButton value="heat" aria-label="Heat" selected={data.mode === "heat"}>
-                <WbSunnyIcon />
-              </ToggleButton>
-              <ToggleButton value="dry" aria-label="Dry" selected={data.mode === "dry"}>
-                <FormatColorResetIcon />
-              </ToggleButton>
-              <ToggleButton value="air" aria-label="Air" selected={data.mode === "air"}>
-                <AirIcon />
-              </ToggleButton>
-              </ToggleButtonGroup>
-            }
-            label="Mode"
-            labelPlacement='start'
-            sx={sxBlockForm}
-          />
+
+          <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})}/>
 
           <Temperature value={data.temperature} onChange={(value: any) => { updateData({...data!, temperature: parseFloat(""+value)}) }}/>
 
@@ -124,7 +84,6 @@ const AirConStateWebSocketForm: FC = () => {
             }
             label="Flow Mode"
             labelPlacement='start'
-            sx={sxBlockForm}
           />
           <BlockFormControlLabel
             control={
@@ -142,7 +101,7 @@ const AirConStateWebSocketForm: FC = () => {
             }
             label="Flow Speed"
             labelPlacement='start'
-            sx={{...sxBlockForm, marginTop: 2}}
+            sx={{marginTop: 2}}
           />
           <BlockFormControlLabel
             control={
@@ -156,7 +115,6 @@ const AirConStateWebSocketForm: FC = () => {
             }
             label="Vertical Swing"
             labelPlacement='start'
-            sx={sxBlockForm}
           />
           <Accordion>
             <AccordionSummary

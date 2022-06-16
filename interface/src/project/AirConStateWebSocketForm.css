@@ -8,3 +8,7 @@ table.registers th {
 code {
     font-family: Roboto, Arial, Helvetica, sans-serif;
 }
+
+.MuiFormControlLabel-label {
+    width: 125px;
+}
