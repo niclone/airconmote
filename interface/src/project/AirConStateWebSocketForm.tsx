@@ -21,6 +21,7 @@ import { MapsHomeWork } from '@mui/icons-material';
 import AirconMode from '../components/inputs/AirconMode';
 import AirconPower from '../components/inputs/AirconPower';
 import AirconFlow from '../components/inputs/AirconFlow';
+import AirconTemperatures from '../components/inputs/AirconTemperatures';
 
 export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 
@@ -45,10 +46,7 @@ const AirConStateWebSocketForm: FC = () => {
           <Grid item xs={1} sm={1} md={1}>
             <AirconPower onoff={data.onoff} onChange={(onoff: boolean) => updateData({...data!, onoff})} />
 
-            <div>
-              Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
-            </div>
-
+            <AirconTemperatures insideTemperature={data.sensor_temp_inside} outsideTemperature={data.sensor_temp_outside} />
 
             <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
