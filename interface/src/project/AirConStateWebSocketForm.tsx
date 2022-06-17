@@ -28,7 +28,7 @@ export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 const AirConStateWebSocketForm: FC = () => {
   const { connected, updateData, data } = useWs<AirConState>(AIRCON_SETTINGS_WEBSOCKET_URL);
 
-  const temperatureText = (value: number) => `${value}°C`;
+  const debug=false;
 
   const content = () => {
     if (!connected || !data) {
@@ -59,20 +59,22 @@ const AirConStateWebSocketForm: FC = () => {
             />
           </Grid>
 
-          <Grid item xs={1} sm={1} md={1}>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>Advanced debug registers</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <AdvancedRegisters registers={data.registers}/>
-              </AccordionDetails>
-            </Accordion>
-          </Grid>
+          {debug && (
+            <Grid item xs={1} sm={1} md={1}>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Advanced debug registers</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <AdvancedRegisters registers={data.registers}/>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          )}
         </Grid>
       </Box>
     );
