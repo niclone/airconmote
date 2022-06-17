@@ -31,7 +31,19 @@ class MODE {
     static const byte AIR                 = 0x06;
 };
 
+class MODE_POWER {
+  public:
+    static const byte NORMALPOWER         = 0x00;
+    static const byte MAXPOWER            = 0x02;
+};
+
 class VERTICALSWING {
+  public:
+    static const byte OFF                 = 0x00;
+    static const byte ON                  = 0x01;
+};
+
+class HORIZONTALSWING {
   public:
     static const byte OFF                 = 0x00;
     static const byte ON                  = 0x01;
