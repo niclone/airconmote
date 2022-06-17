@@ -41,7 +41,7 @@ const AirconFlow = (props: Props) => {
 
         <BlockFormControlLabel
             control={
-              <Box sx={{ width: 300 }}>
+              <Box sx={{ width: 240 }}>
                   <Slider
                       aria-label="Flow Speed"
                       value={props.flowspeed-2}
