@@ -28,7 +28,7 @@ export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 const AirConStateWebSocketForm: FC = () => {
   const { connected, updateData, data } = useWs<AirConState>(AIRCON_SETTINGS_WEBSOCKET_URL);
 
-  const debug=false;
+  const debug=true;
 
   const content = () => {
     if (!connected || !data) {
@@ -50,7 +50,7 @@ const AirConStateWebSocketForm: FC = () => {
 
             <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
-            <AirconTemperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
+            <AirconTemperature mode={data.mode} value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
 
             <AirconFlow
               flowspeed={data.flowspeed}

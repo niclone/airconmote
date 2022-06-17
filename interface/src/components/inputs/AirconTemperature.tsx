@@ -14,9 +14,25 @@ const temperatures = [
 type Props = {
     value: number,
     onChange: (temperature: number) => void,
+    mode: string,
 }
 
-export default function AirconTemperature({ value, onChange}: Props) {
+export default function AirconTemperature({ value, onChange, mode}: Props) {
+  let progressColorFrom="#00ffff";
+  let progressColorTo="#ff77ff";
+
+  switch (mode) {
+    case "heat":
+    case "auto":
+      progressColorFrom="#77aaaa";
+      progressColorTo="#ff0022";
+      break;
+    case "dry":
+    case "snow":
+    case "air":
+      break;
+  }
+
   return (
     <Box className="AirconTemperature" display={"flex"} justifyContent={"space-around"}>
         <CircularSlider
@@ -24,8 +40,8 @@ export default function AirconTemperature({ value, onChange}: Props) {
             labelColor="#005a58"
             knobColor="#005a58"
             knobPosition="bottom"
-            progressColorFrom="#00ffff"
-            progressColorTo="#ff77ff"
+            progressColorFrom={progressColorFrom}
+            progressColorTo={progressColorTo}
             progressSize={34}
             trackColor="#eeeeee"
             trackSize={36}
