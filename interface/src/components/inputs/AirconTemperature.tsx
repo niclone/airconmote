@@ -18,7 +18,7 @@ type Props = {
 
 export default function AirconTemperature({ value, onChange}: Props) {
   return (
-    <Box display={"flex"} justifyContent={"space-around"}>
+    <Box className="AirconTemperature" display={"flex"} justifyContent={"space-around"}>
         <CircularSlider
             label="temperature"
             labelColor="#005a58"
