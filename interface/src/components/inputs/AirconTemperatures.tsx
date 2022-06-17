@@ -9,18 +9,19 @@ type Props = {
 }
 
 const AirconTemperatures = (props: Props) => {
-  return (
+    const tempTxt = (value: number) => `${value}°C`;
+    return (
     <Grid container direction="row" justifyContent="center" alignItems="center" spacing={10}>
         <Grid item>
             <Grid container direction="row" justifyContent="center" alignItems="center" spacing={1}>
                 <Grid item><HomeIcon/></Grid>
-                <Grid item>{props.insideTemperature}</Grid>
+                <Grid item>{tempTxt(props.insideTemperature)}</Grid>
             </Grid>
         </Grid>
         <Grid item>
             <Grid container direction="row" justifyContent="center" alignItems="center" spacing={1}>
                 <Grid item><ForestIcon/></Grid>
-                <Grid item>{props.insideTemperature}</Grid>
+                <Grid item>{tempTxt(props.outsideTemperature)}</Grid>
             </Grid>
         </Grid>
     </Grid>
