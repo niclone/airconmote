@@ -6,6 +6,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Grid from "@mui/material/Grid";
 
 import HdrAutoOutlinedIcon from '@mui/icons-material/HdrAutoOutlined';
 import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
@@ -22,6 +23,7 @@ import './AirConStateWebSocketForm.css';
 import { AirConState } from './types';
 import { MapsHomeWork } from '@mui/icons-material';
 import AirconMode from '../components/inputs/AirconMode';
+import AirconPower from '../components/inputs/AirconPower';
 
 export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 
@@ -42,23 +44,13 @@ const AirConStateWebSocketForm: FC = () => {
 
     return (
         <>
+
+          <AirconPower onoff={data.onoff} onChange={(onoff: boolean) => updateData({...data!, onoff})} />
+
           <div>
             Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
           </div>
 
-          <BlockFormControlLabel
-            control={
-              <Switch
-                name="onoff"
-                disabled={saving}
-                checked={data.onoff}
-                onChange={(ev) => updateData({...data!, onoff: ev.target.checked})}
-                color="primary"
-              />
-            }
-            label="Power"
-            labelPlacement='start'
-          />
 
           <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
