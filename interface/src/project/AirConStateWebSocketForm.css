@@ -12,3 +12,13 @@ code {
 .MuiFormControlLabel-label {
     width: 125px;
 }
+
+.BlockFormControlLabel {
+    flex-grow: 1;
+}
+
+.BlockFormControlLabel label {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+}

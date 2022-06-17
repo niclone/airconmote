@@ -6,7 +6,6 @@ import HdrAutoOutlinedIcon from '@mui/icons-material/HdrAutoOutlined';
 import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
 import TuneIcon from '@mui/icons-material/Tune';
 
-
 type Props = {
     flowspeed: number,
     verticalswing: boolean,
@@ -20,10 +19,10 @@ const AirconFlow = (props: Props) => {
         <BlockFormControlLabel
             control={
               <ToggleButtonGroup
-              exclusive
-              aria-label="Flowspeed Mode"
-              sx={{ margin: 1 }}
-              onChange={(ev, v) => props.onChange({flowspeed: parseInt(""+v)}) }
+                exclusive
+                aria-label="Flowspeed Mode"
+                sx={{ margin: 1 }}
+                onChange={(ev, v) => props.onChange({flowspeed: parseInt(""+v)}) }
               >
               <ToggleButton value={0x11} aria-label="Automatic" selected={props.flowspeed === 0x11}>
                 <HdrAutoOutlinedIcon />
@@ -38,9 +37,9 @@ const AirconFlow = (props: Props) => {
             }
             label="Flow Mode"
             labelPlacement='start'
-          />
+        />
 
-          <BlockFormControlLabel
+        <BlockFormControlLabel
             control={
               <Box sx={{ width: 300 }}>
                   <Slider
@@ -56,9 +55,9 @@ const AirconFlow = (props: Props) => {
             label="Flow Speed"
             labelPlacement='start'
             sx={{marginTop: 2}}
-          />
+        />
 
-          <BlockFormControlLabel
+        <BlockFormControlLabel
             control={
               <Switch
                 name="verticalswing"
@@ -69,9 +68,9 @@ const AirconFlow = (props: Props) => {
             }
             label="Vertical Swing"
             labelPlacement='start'
-          />
+        />
     </>
-  )
-}
+  );
+};
 
 export default AirconFlow;

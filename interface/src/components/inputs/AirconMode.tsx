@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { FormControlLabel, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import BlockFormControlLabel from './BlockFormControlLabel';
 
 import ThermostatAutoIcon from '@mui/icons-material/ThermostatAuto';
@@ -20,7 +20,7 @@ const AirconMode = (props: Props) => {
                 <ToggleButtonGroup
                     exclusive
                     aria-label="AirCon Mode"
-                    sx={{ margin: 1 }}
+                    //sx={{ margin: 1, flexFlow: 1 }}
                     onChange={(ev, v) => props.onChange(v) }
                 >
                     <ToggleButton value="auto" aria-label="Automatic" selected={props.mode === "auto"}>
@@ -42,6 +42,7 @@ const AirconMode = (props: Props) => {
             }
             label="Mode"
             labelPlacement='start'
+            sx={{ flex: 1, flexGrow: 1}}
         />
     );
 };

@@ -35,39 +35,49 @@ const AirConStateWebSocketForm: FC = () => {
     }
 
     return (
-        <>
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid
+          container
+          spacing={{xs: 2, md: 3 }}
+          columns={{xs: 1, sm: 2, md: 2 }}
+        >
 
-          <AirconPower onoff={data.onoff} onChange={(onoff: boolean) => updateData({...data!, onoff})} />
+          <Grid item xs={1} sm={1} md={1}>
+            <AirconPower onoff={data.onoff} onChange={(onoff: boolean) => updateData({...data!, onoff})} />
 
-          <div>
-            Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
-          </div>
+            <div>
+              Temperature indoor / outdoor : {temperatureText(data.sensor_temp_inside)} / {temperatureText(data.sensor_temp_outside)}
+            </div>
 
 
-          <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
+            <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
-          <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
+            <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
 
-          <AirconFlow
-            flowspeed={data.flowspeed}
-            verticalswing={data.verticalswing}
-            onChange={(params: object) => updateData({...data!, ...params})}
-          />
+            <AirconFlow
+              flowspeed={data.flowspeed}
+              verticalswing={data.verticalswing}
+              onChange={(params: object) => updateData({...data!, ...params})}
+            />
+          </Grid>
 
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>Advanced debug registers</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <AdvancedRegisters registers={data.registers}/>
-            </AccordionDetails>
-          </Accordion>
-        </>
-      );
+          <Grid item xs={1} sm={1} md={1}>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>Advanced debug registers</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <AdvancedRegisters registers={data.registers}/>
+              </AccordionDetails>
+            </Accordion>
+          </Grid>
+        </Grid>
+      </Box>
+    );
   };
 
   return content();
