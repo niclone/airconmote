@@ -21,7 +21,7 @@ const AirconMode = (props: Props) => {
                     exclusive
                     aria-label="AirCon Mode"
                     //sx={{ margin: 1, flexFlow: 1 }}
-                    onChange={(ev, v) => props.onChange(v) }
+                    onChange={(_, v) => props.onChange(v) }
                 >
                     <ToggleButton value="auto" aria-label="Automatic" selected={props.mode === "auto"}>
                         <ThermostatAutoIcon />

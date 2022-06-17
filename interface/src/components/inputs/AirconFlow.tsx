@@ -1,6 +1,6 @@
-import { Box, Slider, Switch, ToggleButton, ToggleButtonGroup } from '@mui/material'
-import React from 'react'
-import BlockFormControlLabel from './BlockFormControlLabel'
+import { Box, Slider, Switch, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import React from 'react';
+import BlockFormControlLabel from './BlockFormControlLabel';
 
 import HdrAutoOutlinedIcon from '@mui/icons-material/HdrAutoOutlined';
 import HearingDisabledIcon from '@mui/icons-material/HearingDisabled';
@@ -22,7 +22,7 @@ const AirconFlow = (props: Props) => {
                 exclusive
                 aria-label="Flowspeed Mode"
                 sx={{ margin: 1 }}
-                onChange={(ev, v) => props.onChange({flowspeed: parseInt(""+v)}) }
+                onChange={(_, v) => props.onChange({flowspeed: parseInt(""+v)}) }
               >
               <ToggleButton value={0x11} aria-label="Automatic" selected={props.flowspeed === 0x11}>
                 <HdrAutoOutlinedIcon />
@@ -48,7 +48,7 @@ const AirconFlow = (props: Props) => {
                       step={1}
                       min={1}
                       max={5}
-                      onChangeCommitted={(ev, v) => props.onChange({flowspeed: parseInt(""+v)+2})}
+                      onChangeCommitted={(_, v) => props.onChange({flowspeed: parseInt(""+v)+2})}
                   />
               </Box>
             }
