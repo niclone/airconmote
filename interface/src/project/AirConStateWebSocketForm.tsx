@@ -10,7 +10,7 @@ import Grid from "@mui/material/Grid";
 
 import { WEB_SOCKET_ROOT } from '../api/endpoints';
 import { FormLoader, MessageBox, SectionContent } from '../components';
-import Temperature from '../components/inputs/Temperature';
+import AirconTemperature from '../components/inputs/AirconTemperature';
 import AdvancedRegisters from '../components/advanced/AdvancedRegisters';
 import { updateValue, useWs } from '../utils';
 
@@ -52,7 +52,7 @@ const AirConStateWebSocketForm: FC = () => {
 
             <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
-            <Temperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
+            <AirconTemperature value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
 
             <AirconFlow
               flowspeed={data.flowspeed}
