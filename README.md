@@ -5,7 +5,6 @@
 
 ![AirConMote](/media/airconmote-760.png?raw=true "AirConMote")
 
-
 ## Warning 🚨
 
 This project is an **experimental** Wifi Interface for some Daikin Air Conditionner, it should **not** be used in production.
