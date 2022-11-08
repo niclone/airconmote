@@ -1,8 +1,10 @@
 # AirConMote
 
-This is a firmware writed for ESP32/ESP8266 module.
-It give WiFi and MQTT support on some Daikin Air Conditionner that have the S31 module connector.
-This project is based on esp8266-react framework
+- This is a firmware writed for ESP32/ESP8266 module.
+- It give WiFi and MQTT support on some Daikin Air Conditionner that have the S31 module connector.
+
+![AirConMote](/media/airconmote-760.png?raw=true "AirConMote")
+
 
 ## Warning 🚨
 
