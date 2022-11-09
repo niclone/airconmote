@@ -4,3 +4,26 @@ table.registers td {
 table.registers th {
     min-width: 2em;
 }
+
+code {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+.MuiFormControlLabel-label {
+    /*width: 125px;*/
+}
+
+.BlockFormControlLabel {
+    /*flex-grow: 1;*/
+}
+
+.BlockFormControlLabel label {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin: 1em 1em 1em 1em;
+}
+
+.AirconTemperature {
+    margin: 2em 0 2em 0;
+}

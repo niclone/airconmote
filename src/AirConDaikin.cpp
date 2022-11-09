@@ -294,13 +294,13 @@ void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) 
 void AirConDaikin::sendSwing(bool vertical, bool horizontal) {
     byte message[6]={0,0,0,0,0,0};
     message[0] = MSGCODE::WRITE_REGISTER;
-    message[1] = REGISTER::MODE;
+    message[1] = REGISTER::FLOWAIR_DIRECTION;
 
     // encode vertical swing :
     message[2] = vertical ? VERTICALSWING::ON : VERTICALSWING::OFF;
     message[3] = vertical ? 15 : 0;
 
-    message[4] = horizontal ? VERTICALSWING::ON : VERTICALSWING::OFF;
+    message[4] = horizontal ? HORIZONTALSWING::ON : HORIZONTALSWING::OFF;
     message[5] = horizontal ? 15 : 0;
 
     sendMessage(message, sizeof(message));
