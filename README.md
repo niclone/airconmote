@@ -2,8 +2,12 @@
 
 - This is a firmware writed for ESP32/ESP8266 module.
 - It give WiFi and MQTT support on some Daikin Air Conditionner that have the S31 module connector.
+- It is easy to assemble, you will only need an ESP32 module, and a 5-wire JST EH cable that must be soldered to the ESP32 module. The ESP32 module will be programmed using an USB câble.
+- This project is not a Daikin official module, it is also not a copy, it does not cover exacly the same features/goals.
 
 ![AirConMote](/media/airconmote-760.png?raw=true "AirConMote")
+
+![Complete module](/media/module.jpg?raw=true "Complete module")
 
 ## Warning 🚨
 
@@ -16,7 +20,7 @@ This code is "experimental" for various reasons:
 - It is not tested rigorously.
 - It can suffer from significant changes (breaking changes) without further notice.
 
-**IMPORTANT: REMOVE MAINS POWER OF THE AIR CONDITIONNER BEFORE CONNECTING THINGS ON IT TO AVOID ELECTRIC SHOCK !!!**
+**IMPORTANT: REMOVE MAIN POWER OF THE AIR CONDITIONNER BEFORE CONNECTING THINGS ON IT TO AVOID ELECTRIC SHOCK !!!**
 
 **Use it at your own risk!** ☠️
 
@@ -85,6 +89,29 @@ Alternatively run the 'upload' target:
 ```bash
 platformio run -t upload
 ```
+
+#### Connector
+The Air Conditionner must have an "S21" connector. This is a 5 pins one.
+
+Here are photos of the connector on a daikin ATXC35C :
+
+![S21](/media/S21-small.jpg?raw=true "S21")
+
+
+Pinout :
+
+| S21 | Daikin | ESP32 Pin |
+|-----|:---:|----------:|
+| 1   | 5V  | VCC       |
+| 2   | TX  | IO16      |
+| 3   | RX  | IO17      |
+| 4   | 12V |           |
+| 5   | GND | GND       |
+
+
+![S21 zoom](/media/S21-zoom.jpg?raw=true "S21 zoom")
+
+![ESP32 Pinout](/media/esp-pinout.jpg?raw=true "ESP32 pinout")
 
 ### Building & uploading the interface
 
