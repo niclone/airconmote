@@ -131,15 +131,17 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
             );
             */
 
+
         stateService->update([&](AirConState& state) {
 
             bool changed = false;
             if (memcmp(&registers[registernum], &state.registers[registernum], 5) != 0) {
-                memcpy(&state.registers[registernum], &inMessage[1], 5);
+                memcpy(&state.registers[registernum], &registers[registernum], 5);
                 changed = true;
             }
             return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
         }, "device");
+
     }
 
 
@@ -251,6 +253,14 @@ void AirConDaikin::sendMessage(byte message[], int length) {
 
     serial->write(outBuffer, 4+length);
     latestmsg=millis();
+
+    if (message[0] == MSGCODE::WRITE_REGISTER) {
+        // update local registers
+        int registernum = message[1];
+        if (registernum > 0 && registernum < 0x25) {
+            memcpy(&registers[registernum], &message[2], 5);
+        }
+    }
 }
 
 void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) {
