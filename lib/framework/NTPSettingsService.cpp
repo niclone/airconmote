@@ -6,23 +6,25 @@ NTPSettingsService::NTPSettingsService(AsyncWebServer* server, FS* fs, SecurityM
     _timeHandler(TIME_PATH,
                  securityManager->wrapCallback(
                      std::bind(&NTPSettingsService::configureTime, this, std::placeholders::_1, std::placeholders::_2),
-                     AuthenticationPredicates::IS_ADMIN)) {
-  _timeHandler.setMethod(HTTP_POST);
-  _timeHandler.setMaxContentLength(MAX_TIME_SIZE);
-  server->addHandler(&_timeHandler);
+                     AuthenticationPredicates::IS_ADMIN)
+    ) {
+
+    _timeHandler.setMethod(HTTP_POST);
+    _timeHandler.setMaxContentLength(MAX_TIME_SIZE);
+    server->addHandler(&_timeHandler);
 #ifdef ESP32
-  WiFi.onEvent(
-      std::bind(&NTPSettingsService::onStationModeDisconnected, this, std::placeholders::_1, std::placeholders::_2),
-      WiFiEvent_t::SYSTEM_EVENT_STA_DISCONNECTED);
-  WiFi.onEvent(std::bind(&NTPSettingsService::onStationModeGotIP, this, std::placeholders::_1, std::placeholders::_2),
-               WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
+    WiFi.onEvent(
+        std::bind(&NTPSettingsService::onStationModeDisconnected, this, std::placeholders::_1, std::placeholders::_2),
+        WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+    WiFi.onEvent(std::bind(&NTPSettingsService::onStationModeGotIP, this, std::placeholders::_1, std::placeholders::_2),
+        WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 #elif defined(ESP8266)
-  _onStationModeDisconnectedHandler = WiFi.onStationModeDisconnected(
-      std::bind(&NTPSettingsService::onStationModeDisconnected, this, std::placeholders::_1));
-  _onStationModeGotIPHandler =
-      WiFi.onStationModeGotIP(std::bind(&NTPSettingsService::onStationModeGotIP, this, std::placeholders::_1));
+    _onStationModeDisconnectedHandler = WiFi.onStationModeDisconnected(
+        std::bind(&NTPSettingsService::onStationModeDisconnected, this, std::placeholders::_1));
+    _onStationModeGotIPHandler =
+        WiFi.onStationModeGotIP(std::bind(&NTPSettingsService::onStationModeGotIP, this, std::placeholders::_1));
 #endif
-  addUpdateHandler([&](const String& originId) { configureNTP(); }, false);
+    addUpdateHandler([&](const String& originId) { configureNTP(); }, false);
 }
 
 void NTPSettingsService::begin() {
