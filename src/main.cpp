@@ -1,6 +1,7 @@
+#include <DebugConsole.h>
 #include <ESP8266React.h>
-#include <LightMqttSettingsService.h>
-#include <LightStateService.h>
+//#include <LightMqttSettingsService.h>
+//#include <LightStateService.h>
 #include <AirConMqttSettingsService.h>
 #include <AirConStateService.h>
 
@@ -11,13 +12,14 @@
 AsyncWebServer server(80);
 ESP8266React esp8266React(&server);
 
+/*
 LightMqttSettingsService lightMqttSettingsService =
     LightMqttSettingsService(&server, esp8266React.getFS(), esp8266React.getSecurityManager());
 LightStateService lightStateService = LightStateService(&server,
                                                         esp8266React.getSecurityManager(),
                                                         esp8266React.getMqttClient(),
                                                         &lightMqttSettingsService);
-
+*/
 
 
 
@@ -42,10 +44,10 @@ void setup() {
   esp8266React.begin();
 
   // load the initial light settings
-  lightStateService.begin();
+  //lightStateService.begin();
 
   // start the light service
-  lightMqttSettingsService.begin();
+  //lightMqttSettingsService.begin();
 
   // load the initial airCon settings
   airConStateService.begin();
@@ -65,5 +67,8 @@ void loop() {
 
   airConStateService.loop();
 
+#ifdef DEBUGCONSOLE
+  debugloop();
+#endif
   //uarttunnel_loop();
 }
