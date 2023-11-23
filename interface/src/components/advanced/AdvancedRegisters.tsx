@@ -36,13 +36,11 @@ const AdvancedRegisters = (props: Props) => {
                         <td>{row[1]}</td>
                         <td>{row[2]}</td>
                         <td>{row[3]}</td>
-                        <td>{row[4]}</td>
                         <th> original: </th>
                         <td>{origRegisters[registerNum] ? origRegisters[registerNum][0] : ''}</td>
                         <td>{origRegisters[registerNum] ? origRegisters[registerNum][1] : ''}</td>
                         <td>{origRegisters[registerNum] ? origRegisters[registerNum][2] : ''}</td>
                         <td>{origRegisters[registerNum] ? origRegisters[registerNum][3] : ''}</td>
-                        <td>{origRegisters[registerNum] ? origRegisters[registerNum][4] : ''}</td>
                     </tr>
                 )})}
             </tbody>

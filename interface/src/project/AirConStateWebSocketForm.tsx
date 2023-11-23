@@ -28,7 +28,7 @@ export const AIRCON_SETTINGS_WEBSOCKET_URL = WEB_SOCKET_ROOT + "airConState";
 const AirConStateWebSocketForm: FC = () => {
   const { connected, updateData, data } = useWs<AirConState>(AIRCON_SETTINGS_WEBSOCKET_URL, 1000);
 
-  const debug=true;
+  const debug=data?.registers ? true : false;
 
   const content = () => {
     if (!connected || !data) {
