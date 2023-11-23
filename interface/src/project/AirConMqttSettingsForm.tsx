@@ -39,7 +39,7 @@ const AirConMqttSettingsForm: FC = () => {
       <>
         <MessageBox
           level="info"
-          message="The LED is controllable via MQTT with the airCon project designed to work with Home Assistant's auto discovery feature."
+          message="The AirCon is controllable via MQTT with the airCon project designed to work with Home Assistant's auto discovery feature."
           my={2}
         />
         <ValidatedTextField
