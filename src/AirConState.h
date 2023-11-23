@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <HttpEndpoint.h> // for JsonObject
 
+#include <DebugConsole.h>
+
 #define DEFAULT_ONOFF false
 #define DEFAULT_MODE "auto"
 #define DEFAULT_TEMPERATURE 24.0f
@@ -19,7 +21,7 @@ class AirConState {
   bool verticalswing;
   float sensor_temp_inside;
   float sensor_temp_outside;
-  byte registers[0x25][5];
+  byte registers[0x25][4];
 
   static void read(AirConState& settings, JsonObject& root) {
       //printf("root size1: %d\n", root.memoryUsage());
@@ -30,25 +32,18 @@ class AirConState {
     root["verticalswing"] = settings.verticalswing;
     root["sensor_temp_inside"] = settings.sensor_temp_inside;
     root["sensor_temp_outside"] = settings.sensor_temp_outside;
+
+#ifdef DEBUGREGISTERS
     JsonArray jregisters = root.createNestedArray("registers");
       //printf("root size2: %d\n", root.memoryUsage());
     for (int i=0; i<0x25; i++) {
         JsonArray nested = jregisters.createNestedArray();
-            /*
-            printf("adding [%x] : %x %x %x %x %x\n",
-                i,
-                settings.registers[i][0],
-                settings.registers[i][1],
-                settings.registers[i][2],
-                settings.registers[i][3],
-                settings.registers[i][4]
-            );
-            */
-        for (int j=0; j<5; j++) {
+        for (int j=0; j<4; j++) {
             nested.add(settings.registers[i][j]);
         }
     }
       //printf("root size3: %d\n", root.memoryUsage());
+#endif
   }
 
   static StateUpdateResult update(JsonObject& root, AirConState& airConState) {
@@ -60,11 +55,14 @@ class AirConState {
   }
 
   static StateUpdateResult haUpdate(JsonObject& root, AirConState& airConState) {
-    bool newOnOff = root["onoff"] | DEFAULT_ONOFF;
-    String newMode = root["mode"] | DEFAULT_MODE;
-    float newTemperature = root["temperature"] | DEFAULT_TEMPERATURE;
-    float newFlowspeed = root["flowspeed"] | DEFAULT_FLOWSPEED;
-    bool newVerticalswing = root["verticalswing"] | DEFAULT_ONOFF;
+    //D.printf("haUpdate\n");
+    D.printf("haUpdate onoff: %d ; temperature: %f\n", root["onoff"].as<bool>(), root["temperature"].as<float>());
+
+    bool newOnOff = root.containsKey("onoff") ? root["onoff"].as<bool>() : airConState.onoff;
+    String newMode = root.containsKey("mode") ? root["mode"].as<String>() : airConState.mode;
+    float newTemperature = root.containsKey("temperature") ? root["temperature"].as<float>() : airConState.temperature;
+    float newFlowspeed = root.containsKey("flowspeed") ? root["flowspeed"].as<int>() : airConState.flowspeed;
+    bool newVerticalswing = root.containsKey("verticalswing") ? root["verticalswing"].as<bool>() : airConState.verticalswing;
     bool changed = false;
 
     if (airConState.onoff != newOnOff) {

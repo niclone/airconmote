@@ -1,6 +1,7 @@
 #include <AirConStateService.h>
 
 #include "AirConDaikin.h"
+#include "DebugConsole.h"
 
 AirConStateService::AirConStateService(AsyncWebServer* server,
                                      SecurityManager* securityManager,
@@ -23,8 +24,8 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
                AuthenticationPredicates::IS_AUTHENTICATED, 4096U),
     _mqttClient(mqttClient),
     _airConMqttSettingsService(airConMqttSettingsService) {
-  // configure led to be output
-  //pinMode(LED_PIN, OUTPUT);
+
+  aircondevice = (AirConDevice *)new AirConDaikin(this);
 
   // configure MQTT callback
   _mqttClient->onConnect(std::bind(&AirConStateService::registerConfig, this));
@@ -33,11 +34,10 @@ AirConStateService::AirConStateService(AsyncWebServer* server,
   _airConMqttSettingsService->addUpdateHandler([&](const String& originId) { registerConfig(); }, false);
 
   // configure settings service update handler to update aircon state
-  addUpdateHandler([&](const String& originId) { onConfigUpdated(); }, false);
+  addUpdateHandler([&](const String& originId) { onConfigUpdated(originId); }, false);
 }
 
 void AirConStateService::begin() {
-  aircondevice = (AirConDevice *)new AirConDaikin(this);
   //onConfigUpdated();
 }
 
@@ -45,7 +45,8 @@ void AirConStateService::loop() {
     aircondevice->loop();
 }
 
-void AirConStateService::onConfigUpdated() {
+void AirConStateService::onConfigUpdated(const String& originId) {
+    D.printf("onConfigUpdated, originId: %s\n", originId.c_str());
   //digitalWrite(LED_PIN, _state.ledOn ? LED_ON : LED_OFF);
   //aircondevice->setState(&_state);
 }
@@ -70,7 +71,14 @@ void AirConStateService::registerConfig() {
   doc["cmd_t"] = "~/set";
   doc["stat_t"] = "~/state";
   doc["schema"] = "json";
-  doc["brightness"] = false;
+
+  doc["onoff"] = false;
+  doc["mode"] = "auto";
+  doc["temperature"] = 24.0f;
+  doc["flowspeed"] = 3;
+  doc["verticalswing"] = false;
+  doc["sensor_temp_inside"] = 24.0f;
+  doc["sensor_temp_outside"] = 24.0f;
 
   String payload;
   serializeJson(doc, payload);

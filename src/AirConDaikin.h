@@ -20,6 +20,13 @@ class REGISTER {
     static const byte FLOWAIR_DIRECTION   = 0x05;
     static const byte MODE_POWER          = 0x06;
     static const byte TEMP_SENSORS        = 0x09;
+
+    inline constexpr static byte REGISTERSLOOPASK[] = {
+        MODE,
+        FLOWAIR_DIRECTION,
+        MODE_POWER,
+        TEMP_SENSORS
+    };
 };
 
 class MODE {
@@ -62,11 +69,11 @@ class AirConDaikin : AirConDevice {
     AirConStateService *stateService;
     update_handler_id_t myUpdateHandler;
     HardwareSerial *serial;
-    int latestAskedState;
+    int askStateIndex;
     byte outBuffer[16], inBuffer[16];
     int inBufferIndex;
     uint32_t latestmsg;
-    byte registers[0x25][5];
+    byte registers[0x25][4];
 
     void loopAskState();
     void initSerial();

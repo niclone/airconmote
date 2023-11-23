@@ -31,7 +31,7 @@ class AirConStateService : public StatefulService<AirConState> {
   AirConMqttSettingsService* _airConMqttSettingsService;
 
   void registerConfig();
-  void onConfigUpdated();
+  void onConfigUpdated(const String& originId);
 };
 
 #endif

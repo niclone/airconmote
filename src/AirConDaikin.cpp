@@ -1,17 +1,19 @@
 #include "AirConDaikin.h"
+#include "DebugConsole.h"
 
 AirConDaikin::AirConDaikin(AirConStateService *stateService) {
     this->stateService = stateService;
     initSerial();
-    latestAskedState=0;
+    askStateIndex=0;
     inBufferIndex=0;
     latestmsg=0;
 
     // register an update handler
     myUpdateHandler = stateService->addUpdateHandler(
         [&](const String& originId) {
-            Serial.print("The aircon's state has been updated by: ");
-            Serial.println(originId);
+            this->stateService->read([&](AirConState& state) {
+                D.printf("The aircon's state has been updated by: %s (onoff: %d, temperature: %f)\n", originId.c_str(), state.onoff, state.temperature);
+            });
             if (originId != "device") {
                 this->stateService->read([&](AirConState& state) {
                     setState(&state);
@@ -49,10 +51,24 @@ void AirConDaikin::loop() {
 }
 
 void AirConDaikin::loopAskState() {
-    if (millis() - latestmsg > 500) {
-        if (++latestAskedState > 0x24) latestAskedState=0x01;
-        byte msg[]={MSGCODE::READ_REGISTER, (byte)latestAskedState};
+    if (millis() - latestmsg > 250) {
+#ifdef DEBUGREGISTERS
+        askStateIndex = askStateIndex + 1;
+        if (askStateIndex > 0x24) askStateIndex=0x01;
+        //if (askStateIndex > 0x48) askStateIndex=0x01;
+        if (askStateIndex < 0x25) {
+            byte msg[]={MSGCODE::READ_REGISTER, (byte)askStateIndex};
+            sendMessage(msg, sizeof(msg));
+        } else {
+            byte msg[]={MSGCODE::READ_REGISTER2, (byte)askStateIndex - 0x24};
+            sendMessage(msg, sizeof(msg));
+        }
+#else
+        byte msg[]={MSGCODE::READ_REGISTER, REGISTER::REGISTERSLOOPASK[askStateIndex]};
+        //D.printf("asking for register %x\n", REGISTER::REGISTERSLOOPASK[askStateIndex]);
         sendMessage(msg, sizeof(msg));
+        if (++askStateIndex >= sizeof(REGISTER::REGISTERSLOOPASK)) askStateIndex=0;
+#endif
     }
 }
 
@@ -63,7 +79,7 @@ void AirConDaikin::readSerial() {
         //Serial.printf("got hex : %x\n", b);
         if (readed != 1) {
             // something bad happened !
-            Serial.printf("read error: %d\n", readed);
+            D.printf("read error: %d\n", readed);
             return;
         }
         switch (inBufferIndex) {
@@ -96,16 +112,22 @@ void AirConDaikin::readSerial() {
 }
 
 void AirConDaikin::decodeInputMessage() {
-    //Serial.printf("decodeInputMessage: %x %x (...)\n", inBuffer[0], inBuffer[1]);
-
-    byte inMessage[sizeof(inBuffer-2)];
+    byte inMessage[sizeof(inBuffer)-2];
     for (int i=2; i<inBufferIndex; i++) {
         inMessage[i-2]=inBuffer[i] - 0x30;
     }
 
     int len = inBufferIndex-2;
 
-    //Serial.printf("inMessage(%d): %x %x (...)\n", len, inMessage[0], inMessage[1]);
+    D.printf("[device] READ ");
+    for (int i=0; i<len; i++) {
+        D.printf(" %x", inMessage[i]);
+    }
+    D.printf(" (%d)\n", len);
+
+    if (len != 8) {
+        D.printf("             READED A MESSAGE OF LEN : %d     **************\n", len);
+    }
 
     switch(inMessage[0]) {
         case MSGCODE::REGISTER_ANSWER: decodeRegisterAnswer(&inMessage[1], len-1); break;
@@ -117,8 +139,9 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
     //Serial.printf("decodeRegisterAnswer: %x %x (...)", inMessage[0], inMessage[1]);
     // update local registers
     int registernum = inMessage[0];
+    //D.printf("[device] registernum: %x\n", registernum);
     if (registernum > 0 && registernum < 0x25) {
-        memcpy(&registers[registernum], &inMessage[1], 5);
+        memcpy(&registers[registernum], &inMessage[1], 4);
 
             /*
             printf("register1 [%x] : %x %x %x %x %x\n",
@@ -130,18 +153,6 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
                 registers[registernum][4]
             );
             */
-
-
-        stateService->update([&](AirConState& state) {
-
-            bool changed = false;
-            if (memcmp(&registers[registernum], &state.registers[registernum], 5) != 0) {
-                memcpy(&state.registers[registernum], &registers[registernum], 5);
-                changed = true;
-            }
-            return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
-        }, "device");
-
     }
 
 
@@ -157,12 +168,26 @@ void AirConDaikin::decodeRegisterAnswer(byte *inMessage, int len) {
         case REGISTER::TEMP_SENSORS:
             decodeRegisterTempSensors();
             break;
+        default:
+            if (registernum > 0 && registernum < 0x25) {
+                stateService->update([&](AirConState& state) {
+                    bool changed = false;
+                    if (memcmp(&registers[registernum], &state.registers[registernum], 4) != 0) {
+                        memcpy(&state.registers[registernum], &registers[registernum], 4);
+                        changed = true;
+                    }
+                    return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
+                }, "device");
+            }
+            break;
     }
 }
 
 void AirConDaikin::decodeRegisterMode() {
     //Serial.println("decoding mode state of device ...");
+
     const byte *reg = registers[REGISTER::MODE];
+
     bool onoff = reg[0] == 0x01 ? true : false;
     String mode;
     switch(reg[1]) {
@@ -174,6 +199,8 @@ void AirConDaikin::decodeRegisterMode() {
     }
     float temperature = reg[2] / 2.0 + 10.0;
     int flowspeed = reg[3];
+
+    D.printf("[device] onoff: %d, mode: %s, temperature: %f, flowspeed: %d\n", onoff, mode.c_str(), temperature, flowspeed);
 
     stateService->update([&](AirConState& state) {
         bool changed = false;
@@ -187,10 +214,19 @@ void AirConDaikin::decodeRegisterMode() {
         }
         if (state.temperature != temperature) {
             state.temperature = temperature;
+            changed=true;
         }
         if (state.flowspeed != flowspeed) {
             state.flowspeed = flowspeed;
+            changed=true;
         }
+
+        const int registernum = REGISTER::MODE;
+        if (memcmp(&registers[registernum], &state.registers[registernum], 4) != 0) {
+            memcpy(&state.registers[registernum], &registers[registernum], 4);
+            changed = true;
+        }
+
         return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
     }, "device");
 }
@@ -201,14 +237,23 @@ void AirConDaikin::decodeRegisterFlowairDirection() {
     stateService->update([&](AirConState& state) {
         bool changed = false;
         bool verticalswing = state.verticalswing;
+
         switch(reg[1]) {
             case VERTICALSWING::OFF: verticalswing = false; break;
             case VERTICALSWING::ON:  verticalswing = true;  break;
         }
+
         if (verticalswing != state.verticalswing) {
             state.verticalswing = verticalswing;
             changed = true;
         }
+
+        const int registernum = REGISTER::MODE;
+        if (memcmp(&registers[registernum], &state.registers[registernum], 4) != 0) {
+            memcpy(&state.registers[registernum], &registers[registernum], 4);
+            changed = true;
+        }
+
         return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
     }, "device");
 }
@@ -221,14 +266,23 @@ void AirConDaikin::decodeRegisterTempSensors() {
 
     stateService->update([&](AirConState& state) {
         bool changed = false;
+
         if (state.sensor_temp_inside != temp_inside) {
             state.sensor_temp_inside = temp_inside;
             changed=true;
         }
+
         if (state.sensor_temp_outside != temp_outside) {
             state.sensor_temp_outside = temp_outside;
             changed=true;
         }
+
+        const int registernum = REGISTER::MODE;
+        if (memcmp(&registers[registernum], &state.registers[registernum], 4) != 0) {
+            memcpy(&state.registers[registernum], &registers[registernum], 4);
+            changed = true;
+        }
+
         return changed ? StateUpdateResult::CHANGED : StateUpdateResult::UNCHANGED;
     }, "device");
 }
@@ -239,15 +293,18 @@ void AirConDaikin::decodeRegister2Answer(byte *inMessage, int len) {
 }
 
 void AirConDaikin::sendMessage(byte message[], int length) {
-    //Serial.printf("sendMessage: %x %x (...)\n", message[0], message[1]);
     outBuffer[0]=0x06;
     outBuffer[1]=0x02;
+    D.printf("[device] WRITE ");
     byte checksum=0;
     for (int i=0; i<length; i++) {
         byte b=message[i] + 0x30;
         checksum+=b;
         outBuffer[2+i]=b;
+        D.printf(" %x", message[i]);
     }
+    D.printf(" checksum: %x\n", checksum);
+    D.printf("\n");
     outBuffer[2+length]=checksum;
     outBuffer[3+length]=0x03;
 
@@ -258,9 +315,10 @@ void AirConDaikin::sendMessage(byte message[], int length) {
         // update local registers
         int registernum = message[1];
         if (registernum > 0 && registernum < 0x25) {
-            memcpy(&registers[registernum], &message[2], 5);
+            memcpy(&registers[registernum], &message[2], 4);
         }
     }
+
 }
 
 void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) {
@@ -316,6 +374,8 @@ void AirConDaikin::sendSwing(bool vertical, bool horizontal) {
     sendMessage(message, sizeof(message));
 }
 
-bool isRegisterDiff(int idx, byte message[5]) {
+#if 0
+bool isRegisterDiff(int idx, byte message[4]) {
 
 }
+#endif
