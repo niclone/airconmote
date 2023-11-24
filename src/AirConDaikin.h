@@ -33,9 +33,9 @@ class MODE {
   public:
     static const byte AUTO                = 0x01;
     static const byte DRY                 = 0x02;
-    static const byte SNOW                = 0x03;
+    static const byte COOL                = 0x03;
     static const byte HEAT                = 0x04;
-    static const byte AIR                 = 0x06;
+    static const byte FAN_ONLY            = 0x06;
 };
 
 class MODE_POWER {

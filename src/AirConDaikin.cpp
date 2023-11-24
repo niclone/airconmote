@@ -51,7 +51,7 @@ void AirConDaikin::loop() {
 }
 
 void AirConDaikin::loopAskState() {
-    if (millis() - latestmsg > 250) {
+    if (millis() - latestmsg > 5000) {
 #ifdef DEBUGREGISTERS
         askStateIndex = askStateIndex + 1;
         if (askStateIndex > 0x24) askStateIndex=0x01;
@@ -193,9 +193,9 @@ void AirConDaikin::decodeRegisterMode() {
     switch(reg[1]) {
         case MODE::AUTO: mode = "auto"; break;
         case MODE::DRY:  mode = "dry";  break;
-        case MODE::SNOW: mode = "snow"; break;
+        case MODE::COOL: mode = "cool"; break;
         case MODE::HEAT: mode = "heat"; break;
-        case MODE::AIR:  mode = "air";  break;
+        case MODE::FAN_ONLY:  mode = "fan_only";  break;
     }
     float temperature = reg[2] / 2.0 + 10.0;
     int flowspeed = reg[3];
@@ -334,12 +334,12 @@ void AirConDaikin::sendMode(bool onoff, String mode, float temp, int flowspeed) 
         message[3]=MODE::AUTO; // auto
     } else if (mode.equals("dry")) {
         message[3]=MODE::DRY; // dry
-    } else if (mode.equals("snow")) {
-        message[3]=MODE::SNOW; // snow
+    } else if (mode.equals("cool")) {
+        message[3]=MODE::COOL; // cool
     } else if (mode.equals("heat")) {
         message[3]=MODE::HEAT; // heat
-    } else if (mode.equals("air")) {
-        message[3]=MODE::AIR; // air
+    } else if (mode.equals("fan_only")) {
+        message[3]=MODE::FAN_ONLY; // Fan Only
     } else {
         //console.error("setMode to unknown mode : ", mode);
         return;

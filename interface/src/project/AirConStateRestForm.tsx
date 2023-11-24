@@ -74,6 +74,31 @@ const AirConStateRestForm: FC = () => {
     }
     console.log("data for content : ", data);
 
+    const flowspeedAsInteger = (flowspeed: string) => {
+        switch(flowspeed) {
+            case "low": return 1;
+            case "gentle": return 2;
+            case "medium": return 3;
+            case "strong": return 4;
+            case "high": return 5;
+            case "auto": return 0;
+            case "quiet": return 0;
+            default: return 0;
+        }
+    };
+
+    const flowspeedAsString = (flowspeed: number) => {
+        switch(flowspeed) {
+            case 1: return "low";
+            case 2: return "gentle";
+            case 3: return "medium";
+            case 4: return "strong";
+            case 5: return "high";
+            case 0: return "auto";
+            default: return "auto";
+        }
+    };
+
     return (
       <>
         <BlockFormControlLabel
@@ -101,7 +126,7 @@ const AirConStateRestForm: FC = () => {
             <ToggleButton value="auto" aria-label="Automatic" selected={data.mode === "auto"}>
               <ThermostatAutoIcon />
             </ToggleButton>
-            <ToggleButton value="snow" aria-label="Air Conditionned" selected={data.mode === "snow"}>
+            <ToggleButton value="cool" aria-label="Air Conditionned" selected={data.mode === "cool"}>
               <AcUnitIcon />
             </ToggleButton>
             <ToggleButton value="heat" aria-label="Heat" selected={data.mode === "heat"}>
@@ -110,7 +135,7 @@ const AirConStateRestForm: FC = () => {
             <ToggleButton value="dry" aria-label="Dry" selected={data.mode === "dry"}>
               <FormatColorResetIcon />
             </ToggleButton>
-            <ToggleButton value="air" aria-label="Air" selected={data.mode === "air"}>
+            <ToggleButton value="fan_only" aria-label="Fan Only" selected={data.mode === "fan_only"}>
               <AirIcon />
             </ToggleButton>
             </ToggleButtonGroup>
@@ -148,15 +173,15 @@ const AirConStateRestForm: FC = () => {
             exclusive
             aria-label="Flowspeed Mode"
             sx={{ margin: 1 }}
-            onChange={(ev, v) => myUpdateData({...data, flowspeed: parseInt(""+v)}) }
+            onChange={(_, v) => myUpdateData({...data, flowspeed: v}) }
             >
-            <ToggleButton value={0x11} aria-label="Automatic" selected={data.flowspeed === 0x11}>
+            <ToggleButton value={0x11} aria-label="Automatic" selected={data.flowspeed === "auto"}>
               <HdrAutoOutlinedIcon />
             </ToggleButton>
-            <ToggleButton value={0x12} aria-label="Silent" selected={data.flowspeed === 0x12}>
+            <ToggleButton value={0x12} aria-label="Quiet" selected={data.flowspeed === "quiet"}>
               <HearingDisabledIcon />
             </ToggleButton>
-            <ToggleButton value={0x05} aria-label="Manual" selected={data.flowspeed < 0x11}>
+            <ToggleButton value={"medium"} aria-label="Manual" selected={data.flowspeed !== "auto" && data.flowspeed !== "quiet"}>
               <TuneIcon />
             </ToggleButton>
             </ToggleButtonGroup>
@@ -170,12 +195,12 @@ const AirConStateRestForm: FC = () => {
             <Box sx={{ width: 300 }}>
                 <Slider
                     aria-label="Flow Speed"
-                    defaultValue={data.flowspeed-2}
+                    defaultValue={flowspeedAsInteger(data.flowspeed)}
                     getAriaValueText={valuetext}
                     step={1}
                     min={1}
                     max={5}
-                    onChangeCommitted={(ev, v) => myUpdateData({...data, flowspeed: parseInt(""+v)+2})}
+                    onChangeCommitted={(_, v) => myUpdateData({...data, flowspeed: flowspeedAsString(v as number)})}
                 />
             </Box>
           }

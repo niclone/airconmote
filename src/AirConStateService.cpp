@@ -59,7 +59,7 @@ void AirConStateService::registerConfig() {
   String subTopic;
   String pubTopic;
 
-  DynamicJsonDocument doc(256);
+  DynamicJsonDocument doc(2048);
   _airConMqttSettingsService->read([&](AirConMqttSettings& settings) {
     configTopic = settings.mqttPath + "/config";
     subTopic = settings.mqttPath + "/set";
@@ -72,13 +72,48 @@ void AirConStateService::registerConfig() {
   doc["stat_t"] = "~/state";
   doc["schema"] = "json";
 
-  doc["onoff"] = false;
-  doc["mode"] = "auto";
-  doc["temperature"] = 24.0f;
-  doc["flowspeed"] = 3;
-  doc["verticalswing"] = false;
-  doc["sensor_temp_inside"] = 24.0f;
-  doc["sensor_temp_outside"] = 24.0f;
+  doc["dev_cla"] = "climate";
+
+  doc["temperature_unit"] = "C";
+  doc["temp_step"] = 0.5;
+  doc["precision"] = 0.5;
+  doc["min_temp"] = 10;
+  doc["max_temp"] = 30;
+  //doc["modes"] = ["off", "auto", "cool", "heat", "dry", "fan_only"];
+
+  JsonArray fanmodes = doc.createNestedArray("fan_modes");
+  fanmodes.add("auto");
+  fanmodes.add("quiet");
+  fanmodes.add("low");
+  fanmodes.add("gentle");
+  fanmodes.add("medium");
+  fanmodes.add("strong");
+  fanmodes.add("high");
+
+  doc["temperature_command_topic"] = "~/set";
+  doc["temperature_command_template"] = "{\"temperature\": {{ value }}}";
+  doc["temperature_state_topic"] = "~/state";
+  doc["temperature_state_template"] = "{{ value_json.temperature }}";
+
+  doc["mode_command_topic"] = "~/set";
+  doc["mode_command_template"] = "{\"mode\": \"{{ value }}\"}";
+  doc["mode_state_topic"] = "~/state";
+  doc["mode_state_template"] = "{{ value_json.mode }}";
+
+  doc["current_temperature_topic"] = "~/state";
+  doc["current_temperature_template"] = "{{ value_json.sensor_temp_inside }}";
+
+  doc["fan_mode_command_topic"] = "~/set";
+  doc["fan_mode_command_template"] = "{\"flowspeed\": \"{{ value }}\"}";
+  doc["fan_mode_state_topic"] = "~/state";
+  doc["fan_mode_state_template"] = "{{ value_json.flowspeed }}";
+
+  doc["swing_mode_command_topic"] = "~/set";
+  doc["swing_mode_command_template"] = "{\"verticalswing\": {{ 0 if value==\"off\" else 1 }}}";
+  doc["swing_mode_state_topic"] = "~/state";
+  doc["swing_mode_state_template"] = "{{ value_json.verticalswing }}";
+
+
 
   String payload;
   serializeJson(doc, payload);

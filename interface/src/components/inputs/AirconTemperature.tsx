@@ -28,8 +28,8 @@ export default function AirconTemperature({ value, onChange, mode}: Props) {
       progressColorTo="#ff0022";
       break;
     case "dry":
-    case "snow":
-    case "air":
+    case "cool":
+    case "fan_only":
       break;
   }
 

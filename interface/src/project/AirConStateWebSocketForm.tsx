@@ -50,7 +50,11 @@ const AirConStateWebSocketForm: FC = () => {
 
             <AirconMode mode={data.mode} onChange={(v: string) => updateData({...data!, mode: v})} />
 
-            <AirconTemperature mode={data.mode} value={data.temperature} onChange={(value: number) => { updateData({...data!, temperature: value }) }} />
+            <AirconTemperature
+                mode={data.mode}
+                value={data.temperature}
+                onChange={(value: number) => { updateData({...data!, temperature: value }); }}
+            />
 
             <AirconFlow
               flowspeed={data.flowspeed}

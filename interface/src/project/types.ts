@@ -12,7 +12,7 @@ export interface AirConState {
     onoff: boolean;
     mode: string;
     temperature: number;
-    flowspeed: number;
+    flowspeed: string;
     verticalswing: boolean;
     sensor_temp_inside: number;
     sensor_temp_outside: number;

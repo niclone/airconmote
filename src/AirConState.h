@@ -28,7 +28,7 @@ class AirConState {
     root["onoff"] = settings.onoff;
     root["mode"] = settings.mode;
     root["temperature"] = settings.temperature;
-    root["flowspeed"] = settings.flowspeed;
+    root["flowspeed"] = getFlowSpeedString(settings.flowspeed);
     root["verticalswing"] = settings.verticalswing;
     root["sensor_temp_inside"] = settings.sensor_temp_inside;
     root["sensor_temp_outside"] = settings.sensor_temp_outside;
@@ -50,8 +50,38 @@ class AirConState {
     return haUpdate(root, airConState);
   }
 
+  static const char *getFlowSpeedString(int flowspeed) {
+    switch (flowspeed) {
+      case 0x03: return "low";
+      case 0x04: return "gentle";
+      case 0x05: return "medium";
+      case 0x06: return "strong";
+      case 0x07: return "high";
+      case 0x11: return "auto";
+      case 0x12: return "quiet";
+      default: return "unknown";
+    }
+  }
+
+static byte flowSpeedFromString(String flowspeed) {
+    if (flowspeed.equals("low")) return 0x03;
+    if (flowspeed.equals("gentle")) return 0x04;
+    if (flowspeed.equals("medium")) return 0x05;
+    if (flowspeed.equals("strong")) return 0x06;
+    if (flowspeed.equals("high")) return 0x07;
+    if (flowspeed.equals("auto")) return 0x11;
+    if (flowspeed.equals("quiet")) return 0x12;
+    return 0x00;
+}
+
+
   static void haRead(AirConState& settings, JsonObject& root) {
-    return read(settings, root);
+    root["mode"] = settings.onoff ? settings.mode : "off";
+    root["temperature"] = settings.temperature;
+    root["flowspeed"] = getFlowSpeedString(settings.flowspeed);
+    root["verticalswing"] = settings.verticalswing ? "on" : "off";
+    root["sensor_temp_inside"] = settings.sensor_temp_inside;
+    root["sensor_temp_outside"] = settings.sensor_temp_outside;
   }
 
   static StateUpdateResult haUpdate(JsonObject& root, AirConState& airConState) {
@@ -60,8 +90,12 @@ class AirConState {
 
     bool newOnOff = root.containsKey("onoff") ? root["onoff"].as<bool>() : airConState.onoff;
     String newMode = root.containsKey("mode") ? root["mode"].as<String>() : airConState.mode;
+    if (newMode == "off") {
+        newMode=airConState.mode;
+        newOnOff=false;
+    }
     float newTemperature = root.containsKey("temperature") ? root["temperature"].as<float>() : airConState.temperature;
-    float newFlowspeed = root.containsKey("flowspeed") ? root["flowspeed"].as<int>() : airConState.flowspeed;
+    int newFlowspeed = root.containsKey("flowspeed") ? flowSpeedFromString(root["flowspeed"].as<String>()) : airConState.flowspeed;
     bool newVerticalswing = root.containsKey("verticalswing") ? root["verticalswing"].as<bool>() : airConState.verticalswing;
     bool changed = false;
 
@@ -70,7 +104,7 @@ class AirConState {
       changed=true;
     }
     if (!airConState.mode.equals(newMode)) {
-      if (!newMode.equals("snow") && !newMode.equals("heat") && !newMode.equals("dry") && !newMode.equals("air"))
+      if (!newMode.equals("cool") && !newMode.equals("heat") && !newMode.equals("dry") && !newMode.equals("fan_only") && !newMode.equals("auto"))
         return StateUpdateResult::ERROR;
       airConState.mode = newMode;
       changed=true;

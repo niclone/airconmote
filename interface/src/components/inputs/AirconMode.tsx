@@ -26,7 +26,7 @@ const AirconMode = (props: Props) => {
                     <ToggleButton value="auto" aria-label="Automatic" selected={props.mode === "auto"}>
                         <ThermostatAutoIcon />
                     </ToggleButton>
-                    <ToggleButton value="snow" aria-label="Air Conditionned" selected={props.mode === "snow"}>
+                    <ToggleButton value="cool" aria-label="Air Conditionned" selected={props.mode === "cool"}>
                         <AcUnitIcon />
                     </ToggleButton>
                     <ToggleButton value="heat" aria-label="Heat" selected={props.mode === "heat"}>
@@ -35,7 +35,7 @@ const AirconMode = (props: Props) => {
                     <ToggleButton value="dry" aria-label="Dry" selected={props.mode === "dry"}>
                         <FormatColorResetIcon />
                     </ToggleButton>
-                    <ToggleButton value="air" aria-label="Air" selected={props.mode === "air"}>
+                    <ToggleButton value="fan_only" aria-label="Fan Only" selected={props.mode === "fan_only"}>
                         <AirIcon />
                     </ToggleButton>
                 </ToggleButtonGroup>
