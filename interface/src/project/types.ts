@@ -9,7 +9,7 @@ export interface LightMqttSettings {
 }
 
 export interface AirConState {
-    onoff: boolean;
+    power: boolean;
     mode: string;
     temperature: number;
     flowspeed: string;

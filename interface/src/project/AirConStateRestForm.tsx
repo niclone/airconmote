@@ -104,10 +104,10 @@ const AirConStateRestForm: FC = () => {
         <BlockFormControlLabel
           control={
             <Switch
-              name="onoff"
+              name="power"
               disabled={saving}
-              checked={data.onoff}
-              onChange={(ev) => myUpdateData({...data, onoff: ev.target.checked})}
+              checked={data.power}
+              onChange={(ev) => myUpdateData({...data, power: ev.target.checked})}
               color="primary"
             />
           }

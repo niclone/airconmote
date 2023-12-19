@@ -6,7 +6,7 @@
 
 #include <DebugConsole.h>
 
-#define DEFAULT_ONOFF false
+#define DEFAULT_power false
 #define DEFAULT_MODE "auto"
 #define DEFAULT_TEMPERATURE 24.0f
 #define DEFAULT_FLOWSPEED 3
@@ -14,7 +14,7 @@
 
 class AirConState {
  public:
-  bool onoff;
+  bool power;
   String mode;
   float temperature;
   int flowspeed;
@@ -25,7 +25,7 @@ class AirConState {
 
   static void read(AirConState& settings, JsonObject& root) {
       //printf("root size1: %d\n", root.memoryUsage());
-    root["onoff"] = settings.onoff;
+    root["power"] = settings.power;
     root["mode"] = settings.mode;
     root["temperature"] = settings.temperature;
     root["flowspeed"] = getFlowSpeedString(settings.flowspeed);
@@ -76,7 +76,8 @@ static byte flowSpeedFromString(String flowspeed) {
 
 
   static void haRead(AirConState& settings, JsonObject& root) {
-    root["mode"] = settings.onoff ? settings.mode : "off";
+    //root["power"] = settings.power ? "on" : "off";
+    root["mode"] = settings.power ? settings.mode : "off";
     root["temperature"] = settings.temperature;
     root["flowspeed"] = getFlowSpeedString(settings.flowspeed);
     root["verticalswing"] = settings.verticalswing ? "on" : "off";
@@ -86,21 +87,25 @@ static byte flowSpeedFromString(String flowspeed) {
 
   static StateUpdateResult haUpdate(JsonObject& root, AirConState& airConState) {
     //D.printf("haUpdate\n");
-    D.printf("haUpdate onoff: %d ; temperature: %f\n", root["onoff"].as<bool>(), root["temperature"].as<float>());
+    D.printf("haUpdate power: %d ; temperature: %f\n", root["power"].as<bool>(), root["temperature"].as<float>());
 
-    bool newOnOff = root.containsKey("onoff") ? root["onoff"].as<bool>() : airConState.onoff;
+    String newpowerStr = root.containsKey("power") ? root["power"].as<String>() : (airConState.power ? "on" : "off");
     String newMode = root.containsKey("mode") ? root["mode"].as<String>() : airConState.mode;
-    if (newMode == "off") {
+    if (newMode.equalsIgnoreCase("off")) {
         newMode=airConState.mode;
-        newOnOff=false;
+        newpowerStr="off";
+    } else {
+        newpowerStr="on";
     }
+    bool newpower = newpowerStr.equalsIgnoreCase("on") || newpowerStr.equalsIgnoreCase("true");
+
     float newTemperature = root.containsKey("temperature") ? root["temperature"].as<float>() : airConState.temperature;
     int newFlowspeed = root.containsKey("flowspeed") ? flowSpeedFromString(root["flowspeed"].as<String>()) : airConState.flowspeed;
     bool newVerticalswing = root.containsKey("verticalswing") ? root["verticalswing"].as<bool>() : airConState.verticalswing;
     bool changed = false;
 
-    if (airConState.onoff != newOnOff) {
-      airConState.onoff = newOnOff;
+    if (airConState.power != newpower) {
+      airConState.power = newpower;
       changed=true;
     }
     if (!airConState.mode.equals(newMode)) {

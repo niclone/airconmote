@@ -38,6 +38,7 @@ export const useWs = <D>(wsUrl: string, wsThrottle: number = 100) => {
         case "payload":
           if (clientId.current) {
             setData((existingData) => (clientId.current === message.origin_id && existingData) || message.payload);
+            console.log("payload: ", message.payload);
           }
           break;
       }

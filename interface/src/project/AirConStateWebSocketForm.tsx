@@ -44,7 +44,7 @@ const AirConStateWebSocketForm: FC = () => {
         >
 
           <Grid item xs={1} sm={1} md={1}>
-            <AirconPower onoff={data.onoff} onChange={(onoff: boolean) => updateData({...data!, onoff})} />
+            <AirconPower power={data.power} onChange={(power: boolean) => updateData({...data!, power})} />
 
             <AirconTemperatures insideTemperature={data.sensor_temp_inside} outsideTemperature={data.sensor_temp_outside} />
 

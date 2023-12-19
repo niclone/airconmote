@@ -18,10 +18,12 @@ class REGISTER {
   public:
     static const byte MODE                = 0x01;
     static const byte FLOWAIR_DIRECTION   = 0x05;
+    //static const byte FLOWAIR_DIRECTION   = 0x22;
     static const byte MODE_POWER          = 0x06;
     static const byte TEMP_SENSORS        = 0x09;
+    //static const byte SWING               = 0x22;
 
-    inline constexpr static byte REGISTERSLOOPASK[] = {
+    inline static constexpr byte REGISTERSLOOPASK[] = {
         MODE,
         FLOWAIR_DIRECTION,
         MODE_POWER,
@@ -85,7 +87,7 @@ class AirConDaikin : AirConDevice {
     void decodeRegisterFlowairDirection();
     void decodeRegisterTempSensors();
     void sendMessage(byte packet[], int length);
-    void sendMode(bool onoff, String mode, float temp, int flowspeed);
+    void sendMode(bool power, String mode, float temp, int flowspeed);
     void sendSwing(bool vertical, bool horizontal);
 };
 

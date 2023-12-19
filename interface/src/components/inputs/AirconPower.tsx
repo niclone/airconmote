@@ -3,8 +3,8 @@ import { Switch } from '@mui/material';
 import BlockFormControlLabel from './BlockFormControlLabel';
 
 type Props = {
-    onoff: boolean,
-    onChange: (onoff: boolean) => void,
+    power: boolean,
+    onChange: (power: boolean) => void,
 }
 
 const AirconPower = (props: Props) => {
@@ -12,8 +12,8 @@ const AirconPower = (props: Props) => {
     <BlockFormControlLabel
         control={
             <Switch
-                name="onoff"
-                checked={props.onoff}
+                name="power"
+                checked={props.power}
                 onChange={(ev) => props.onChange(ev.target.checked)}
                 color="primary"
             />

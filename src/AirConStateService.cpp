@@ -72,14 +72,22 @@ void AirConStateService::registerConfig() {
   doc["stat_t"] = "~/state";
   doc["schema"] = "json";
 
-  doc["dev_cla"] = "climate";
+  doc["dev_cla"] = "hvac";
 
   doc["temperature_unit"] = "C";
   doc["temp_step"] = 0.5;
   doc["precision"] = 0.5;
   doc["min_temp"] = 10;
   doc["max_temp"] = 30;
-  //doc["modes"] = ["off", "auto", "cool", "heat", "dry", "fan_only"];
+
+  JsonArray modes = doc.createNestedArray("modes");
+  modes.add("off");
+  modes.add("auto");
+  modes.add("cool");
+  modes.add("heat");
+  modes.add("dry");
+  modes.add("fan_only");
+
 
   JsonArray fanmodes = doc.createNestedArray("fan_modes");
   fanmodes.add("auto");
@@ -89,6 +97,15 @@ void AirConStateService::registerConfig() {
   fanmodes.add("medium");
   fanmodes.add("strong");
   fanmodes.add("high");
+
+/*
+  doc["power_command_topic"] = "~/set";
+  doc["power_command_template"] = "{\"power\": {{ value }}}";
+  //doc["power_state_topic"] = "~/state";
+  //doc["power_state_template"] = "{{ value_json.power }}";
+  doc["payload_on"] = "on";
+  doc["payload_off"] = "off";
+*/
 
   doc["temperature_command_topic"] = "~/set";
   doc["temperature_command_template"] = "{\"temperature\": {{ value }}}";
